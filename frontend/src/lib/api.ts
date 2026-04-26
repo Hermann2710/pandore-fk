@@ -5,11 +5,18 @@ import type { Product, Category, Tag, Order, User } from "@/types";
 export const authApi = {
   login: (data: { username: string; password: string }) =>
     api.post<User>("/auth/login/", data),
-  register: (data: { username: string; email: string; password: string; role: string }) =>
+  // Registration is open to customers only — role defaults to 'customer' on backend
+  register: (data: { username: string; email: string; password: string; phone?: string }) =>
     api.post<User>("/auth/register/", data),
   logout: () => api.post("/auth/logout/"),
   me: () => api.get<User>("/auth/me/"),
   deliveryPersonnel: () => api.get<User[]>("/auth/delivery-personnel/"),
+  // Admin — user management
+  adminUsers: () => api.get<User[]>("/auth/admin/users/"),
+  updateUserRole: (userId: number, data: { role?: string; phone?: string; is_active?: boolean }) =>
+    api.patch<User>(`/auth/admin/users/${userId}/`, data),
+  deleteUser: (userId: number) =>
+    api.delete(`/auth/admin/users/${userId}/delete/`),
 };
 
 // ── Public Catalog ────────────────────────────────────────────────────────────

@@ -6,10 +6,10 @@ import {
   LayoutDashboard, ShoppingBag, FolderOpen, Tag, ClipboardList,
   TrendingUp, Users, Package,
 } from "lucide-react";
+import UsersTab from "./components/UsersTab";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ordersApi } from "@/lib/api";
-import { adminCatalogApi } from "@/lib/api";
+import { ordersApi, adminCatalogApi, authApi } from "@/lib/api";
 import OrdersTab from "./components/OrdersTab";
 import ProductsTab from "./components/ProductsTab";
 import CategoriesTab from "./components/CategoriesTab";
@@ -22,6 +22,7 @@ const TABS = [
   { id: "products",   label: "Products",   icon: ShoppingBag },
   { id: "categories", label: "Categories", icon: FolderOpen },
   { id: "tags",       label: "Tags",       icon: Tag },
+  { id: "users",      label: "Users",      icon: Users },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -44,6 +45,10 @@ function OverviewTab() {
     queryKey: ["admin-tags"],
     queryFn: () => adminCatalogApi.tags().then((r) => r.data),
   });
+  const { data: allUsers } = useQuery({
+    queryKey: ["admin-users"],
+    queryFn: () => authApi.adminUsers().then((r) => r.data),
+  });
 
   const revenue = allOrders
     ?.filter((o) => o.status === "delivered")
@@ -54,7 +59,7 @@ function OverviewTab() {
     { label: "Total Orders",    value: allOrders?.length ?? 0,   icon: ClipboardList, color: "text-blue-500",    bg: "bg-blue-50" },
     { label: "Pending Orders",  value: allOrders?.filter((o) => o.status === "pending").length ?? 0, icon: Package, color: "text-amber-500", bg: "bg-amber-50" },
     { label: "Products",        value: products?.length ?? 0,    icon: ShoppingBag,   color: "text-purple-500",  bg: "bg-purple-50" },
-    { label: "Categories",      value: categories?.length ?? 0,  icon: FolderOpen,    color: "text-rose-500",    bg: "bg-rose-50" },
+    { label: "Users",           value: allUsers?.length ?? 0,    icon: Users,         color: "text-rose-500",    bg: "bg-rose-50" },
     { label: "Tags",            value: tags?.length ?? 0,        icon: Tag,           color: "text-cyan-500",    bg: "bg-cyan-50" },
   ];
 
@@ -124,6 +129,7 @@ export default function AdminDashboard() {
     products:   <ProductsTab />,
     categories: <CategoriesTab />,
     tags:       <TagsTab />,
+    users:      <UsersTab />,
   };
 
   return (
@@ -181,6 +187,7 @@ export default function AdminDashboard() {
               {activeTab === "products"   && "Full product catalog management"}
               {activeTab === "categories" && "Organize products into categories"}
               {activeTab === "tags"       && "Label products with searchable tags"}
+              {activeTab === "users"      && "Manage user accounts and assign roles"}
             </p>
           </div>
 

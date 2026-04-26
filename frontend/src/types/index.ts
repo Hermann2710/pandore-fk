@@ -7,6 +7,8 @@ export interface User {
   role: "admin" | "delivery" | "customer";
   phone: string;
   avatar: string | null;
+  is_active: boolean;
+  date_joined: string;
 }
 
 export interface Category {

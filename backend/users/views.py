@@ -99,3 +99,57 @@ class DeliveryPersonnelListView(APIView):
             return Response(status=403)
         qs = User.objects.filter(role=User.Role.DELIVERY)
         return Response(UserSerializer(qs, many=True).data)
+
+
+class AdminUserListView(APIView):
+    """Admin-only: list every user on the platform with their role."""
+
+    def get(self, request):
+        if not request.user.is_admin_role:
+            return Response(status=403)
+        qs = User.objects.all().order_by("date_joined")
+        return Response(UserSerializer(qs, many=True).data)
+
+
+class AdminUserRoleUpdateView(APIView):
+    """
+    Admin-only: change a user's role or active status.
+    Deliberately separate from the register flow — role assignment
+    is a privileged action, not something users do themselves.
+    """
+
+    def patch(self, request, user_id):
+        if not request.user.is_admin_role:
+            return Response(status=403)
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=404)
+
+        # Only allow updating role, phone, and is_active — nothing else
+        allowed = {"role", "phone", "is_active"}
+        data = {k: v for k, v in request.data.items() if k in allowed}
+
+        if "role" in data and data["role"] not in User.Role.values:
+            return Response({"detail": "Invalid role."}, status=400)
+
+        for field, value in data.items():
+            setattr(user, field, value)
+        user.save()
+        return Response(UserSerializer(user).data)
+
+
+class AdminUserDeleteView(APIView):
+    """Admin-only: delete a user account."""
+
+    def delete(self, request, user_id):
+        if not request.user.is_admin_role:
+            return Response(status=403)
+        if request.user.pk == user_id:
+            return Response({"detail": "You cannot delete your own account."}, status=400)
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=404)
+        user.delete()
+        return Response(status=204)
