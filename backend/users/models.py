@@ -68,3 +68,13 @@ class ShippingAddress(models.Model):
             parts.append(self.state)
         parts += [self.postal_code, self.country]
         return ", ".join(parts)
+
+
+class Wishlist(models.Model):
+    """One wishlist per user — products are added/removed individually."""
+    user     = models.OneToOneField(User, on_delete=models.CASCADE, related_name="wishlist")
+    products = models.ManyToManyField("catalog.Product", blank=True, related_name="wishlisted_by")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s wishlist"

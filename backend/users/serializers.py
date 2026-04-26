@@ -56,3 +56,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
+
+
+class WishlistSerializer(serializers.ModelSerializer):
+    from catalog.serializers import ProductSerializer
+    products = ProductSerializer(many=True, read_only=True)
+
+    class Meta:
+        from .models import Wishlist
+        model = Wishlist
+        fields = ["id", "products", "updated_at"]

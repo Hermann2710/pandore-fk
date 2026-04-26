@@ -3,6 +3,7 @@ from .views import (
     RegisterView, LoginView, LogoutView, RefreshView, MeView,
     UpdateProfileView, ChangePasswordView,
     ShippingAddressListCreateView, ShippingAddressDetailView,
+    WishlistView,
     DeliveryPersonnelListView,
     AdminUserListView, AdminUserRoleUpdateView, AdminUserDeleteView,
 )
@@ -13,13 +14,11 @@ urlpatterns = [
     path("logout/",           LogoutView.as_view()),
     path("refresh/",          RefreshView.as_view()),
     path("me/",               MeView.as_view()),
-    # Profile self-service
     path("profile/",          UpdateProfileView.as_view()),
     path("password/",         ChangePasswordView.as_view()),
-    # Shipping addresses
     path("addresses/",        ShippingAddressListCreateView.as_view()),
     path("addresses/<int:pk>/", ShippingAddressDetailView.as_view()),
-    # Admin
+    path("wishlist/",         WishlistView.as_view()),
     path("delivery-personnel/",          DeliveryPersonnelListView.as_view()),
     path("admin/users/",                 AdminUserListView.as_view()),
     path("admin/users/<int:user_id>/",   AdminUserRoleUpdateView.as_view()),

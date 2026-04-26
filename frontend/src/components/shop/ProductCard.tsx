@@ -6,23 +6,22 @@ import { ShoppingCart, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCartStore } from "@/store/cart";
+import WishlistButton from "@/components/shop/WishlistButton";
 import type { Product } from "@/types";
 import { toast } from "sonner";
 
 interface Props {
   product: Product;
-  index?: number; // used for stagger delay
+  index?: number;
 }
 
 export default function ProductCard({ product, index = 0 }: Props) {
   const addItem = useCartStore((s) => s.addItem);
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault(); // don't navigate when clicking the button inside the link
+    e.preventDefault();
     addItem(product);
-    toast.success(`${product.name} added to cart`, {
-      description: `$${product.price}`,
-    });
+    toast.success(`${product.name} added to cart`, { description: `$${product.price}` });
   };
 
   return (
@@ -35,15 +34,10 @@ export default function ProductCard({ product, index = 0 }: Props) {
     >
       <Link href={`/product/${product.slug}`}>
         <div className="rounded-xl border bg-card overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
-          {/* Product image */}
+          {/* Image */}
           <div className="relative aspect-square overflow-hidden bg-muted">
             {product.image ? (
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
+              <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
             ) : (
               <div className="flex h-full items-center justify-center">
                 <Tag className="h-12 w-12 text-muted-foreground/30" />
@@ -54,47 +48,36 @@ export default function ProductCard({ product, index = 0 }: Props) {
                 <span className="text-white font-semibold text-sm">Out of Stock</span>
               </div>
             )}
+            {/* Wishlist button — top-right corner */}
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <WishlistButton productId={product.id} size="sm" />
+            </div>
           </div>
 
           {/* Info */}
           <div className="p-4 space-y-3">
             <div>
               {product.category && (
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                  {product.category.name}
-                </p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{product.category.name}</p>
               )}
               <h3 className="font-semibold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
                 {product.name}
               </h3>
             </div>
 
-            {/* Tags */}
             {product.tags.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {product.tags.slice(0, 3).map((tag) => (
-                  <Badge key={tag.id} variant="emerald" className="text-[10px]">
-                    {tag.name}
-                  </Badge>
+                  <Badge key={tag.id} variant="emerald" className="text-[10px]">{tag.name}</Badge>
                 ))}
               </div>
             )}
 
-            {/* Price + CTA */}
             <div className="flex items-center justify-between pt-1">
-              <span className="text-lg font-bold text-primary">
-                ${parseFloat(product.price).toFixed(2)}
-              </span>
+              <span className="text-lg font-bold text-primary">${parseFloat(product.price).toFixed(2)}</span>
               <motion.div whileTap={{ scale: 0.9 }}>
-                <Button
-                  size="sm"
-                  variant="luxury"
-                  onClick={handleAddToCart}
-                  disabled={product.stock === 0}
-                  className="gap-1.5"
-                >
-                  <ShoppingCart className="h-3.5 w-3.5" />
-                  Add
+                <Button size="sm" variant="luxury" onClick={handleAddToCart} disabled={product.stock === 0} className="gap-1.5">
+                  <ShoppingCart className="h-3.5 w-3.5" /> Add
                 </Button>
               </motion.div>
             </div>

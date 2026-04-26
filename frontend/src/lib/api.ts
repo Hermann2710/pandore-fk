@@ -1,5 +1,5 @@
 import api from "./axios";
-import type { Product, Category, Tag, Order, User, HomepageSection, ShippingAddress } from "@/types";
+import type { Product, Category, Tag, Order, User, HomepageSection, ShippingAddress, Wishlist } from "@/types";
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export const authApi = {
@@ -27,6 +27,9 @@ export const authApi = {
   createAddress: (data: Partial<ShippingAddress>) => api.post<ShippingAddress>("/auth/addresses/", data),
   updateAddress: (id: number, data: Partial<ShippingAddress>) => api.patch<ShippingAddress>(`/auth/addresses/${id}/`, data),
   deleteAddress: (id: number) => api.delete(`/auth/addresses/${id}/`),
+  // Wishlist
+  wishlist: () => api.get<Wishlist>("/auth/wishlist/"),
+  toggleWishlist: (product_id: number) => api.post<Wishlist & { action: "added" | "removed" }>("/auth/wishlist/", { product_id }),
 };
 
 // ── Public Catalog ────────────────────────────────────────────────────────────

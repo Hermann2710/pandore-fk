@@ -14,7 +14,11 @@ import RelatedProducts from "@/components/shop/RelatedProducts";
 import RecentlyViewed from "@/components/shop/RecentlyViewed";
 import { toast } from "sonner";
 
-export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = use(params);
   const [quantity, setQuantity] = useState(1);
   const addItem = useCartStore((s) => s.addItem);
@@ -42,37 +46,58 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
         <div className="space-y-3">
           <Skeleton className="h-6 w-40" />
           <div className="flex gap-4">
-            {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-64 w-48 shrink-0 rounded-xl" />)}
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-64 w-48 shrink-0 rounded-xl" />
+            ))}
           </div>
         </div>
       </div>
     );
   }
 
-  if (!product) return <p className="text-center py-20 text-muted-foreground">Product not found.</p>;
+  if (!product)
+    return (
+      <p className="text-center py-20 text-muted-foreground">
+        Product not found.
+      </p>
+    );
 
   const handleAddToCart = () => {
     addItem(product, quantity);
-    toast.success(`${product.name} added to cart`, { description: `Qty: ${quantity}` });
+    toast.success(`${product.name} added to cart`, {
+      description: `Qty: ${quantity}`,
+    });
   };
 
   return (
     <div className="space-y-14">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+        <Link href="/" className="hover:text-foreground transition-colors">
+          Home
+        </Link>
         <span>/</span>
-        <Link href="/catalog" className="hover:text-foreground transition-colors">Catalog</Link>
+        <Link
+          href="/catalog"
+          className="hover:text-foreground transition-colors"
+        >
+          Catalog
+        </Link>
         {product.category && (
           <>
             <span>/</span>
-            <Link href={`/catalog?category=${product.category.slug}`} className="hover:text-foreground transition-colors">
+            <Link
+              href={`/catalog?category=${product.category.slug}`}
+              className="hover:text-foreground transition-colors"
+            >
               {product.category.name}
             </Link>
           </>
         )}
         <span>/</span>
-        <span className="text-foreground font-medium truncate max-w-[200px]">{product.name}</span>
+        <span className="text-foreground font-medium truncate max-w-50">
+          {product.name}
+        </span>
       </div>
 
       {/* Main product section */}
@@ -85,10 +110,19 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           className="space-y-3"
         >
           <div className="relative aspect-square rounded-2xl overflow-hidden bg-muted">
-            {product.image
-              ? <Image src={product.image} alt={product.name} fill className="object-cover" priority />
-              : <div className="flex h-full items-center justify-center"><Package className="h-20 w-20 text-muted-foreground/20" /></div>
-            }
+            {product.image ? (
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                className="object-cover"
+                priority
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center">
+                <Package className="h-20 w-20 text-muted-foreground/20" />
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -114,25 +148,38 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
           {/* Price + stock */}
           <div className="flex items-end gap-4">
-            <p className="text-4xl font-black text-primary">${parseFloat(product.price).toFixed(2)}</p>
+            <p className="text-4xl font-black text-primary">
+              ${parseFloat(product.price).toFixed(2)}
+            </p>
             <p className="text-sm pb-1.5">
-              {product.stock > 0
-                ? <span className="text-emerald-600 font-medium">{product.stock} in stock</span>
-                : <span className="text-destructive font-medium">Out of stock</span>
-              }
+              {product.stock > 0 ? (
+                <span className="text-emerald-600 font-medium">
+                  {product.stock} in stock
+                </span>
+              ) : (
+                <span className="text-destructive font-medium">
+                  Out of stock
+                </span>
+              )}
             </p>
           </div>
 
           {/* Description */}
-          <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+          <p className="text-muted-foreground leading-relaxed">
+            {product.description}
+          </p>
 
           {/* Tags */}
           {product.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {product.tags.map((tag) => (
                 <Link key={tag.id} href={`/catalog?tags=${tag.slug}`}>
-                  <Badge variant="emerald" className="cursor-pointer hover:bg-emerald-200 transition-colors">
-                    <Tag className="h-3 w-3 mr-1" />{tag.name}
+                  <Badge
+                    variant="emerald"
+                    className="cursor-pointer hover:bg-emerald-200 transition-colors"
+                  >
+                    <Tag className="h-3 w-3 mr-1" />
+                    {tag.name}
                   </Badge>
                 </Link>
               ))}
@@ -142,9 +189,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           {/* Attributes */}
           {product.attributes.length > 0 && (
             <div className="rounded-xl border bg-muted/30 p-4 space-y-2.5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Specifications</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Specifications
+              </p>
               {product.attributes.map((attr) => (
-                <div key={attr.key} className="flex justify-between text-sm border-b border-border/50 pb-2 last:border-0 last:pb-0">
+                <div
+                  key={attr.key}
+                  className="flex justify-between text-sm border-b border-border/50 pb-2 last:border-0 last:pb-0"
+                >
                   <span className="text-muted-foreground">{attr.key}</span>
                   <span className="font-medium">{attr.value}</span>
                 </div>
@@ -159,15 +211,26 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   className="px-4 py-2.5 hover:bg-muted transition-colors font-medium text-lg"
-                >−</button>
-                <span className="px-5 py-2.5 font-bold min-w-[3.5rem] text-center border-x">{quantity}</span>
+                >
+                  −
+                </button>
+                <span className="px-5 py-2.5 font-bold min-w-14 text-center border-x">
+                  {quantity}
+                </span>
                 <button
-                  onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                  onClick={() =>
+                    setQuantity((q) => Math.min(product.stock, q + 1))
+                  }
                   className="px-4 py-2.5 hover:bg-muted transition-colors font-medium text-lg"
-                >+</button>
+                >
+                  +
+                </button>
               </div>
               <p className="text-sm text-muted-foreground">
-                Subtotal: <span className="font-bold text-foreground">${(parseFloat(product.price) * quantity).toFixed(2)}</span>
+                Subtotal:{" "}
+                <span className="font-bold text-foreground">
+                  ${(parseFloat(product.price) * quantity).toFixed(2)}
+                </span>
               </p>
             </div>
 

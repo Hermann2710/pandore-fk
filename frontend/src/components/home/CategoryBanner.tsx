@@ -6,10 +6,16 @@ import { ArrowRight, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { HomepageSection } from "@/types";
 
-interface Props { section: HomepageSection; }
+interface Props {
+  section: HomepageSection;
+}
 
 export default function CategoryBanner({ section }: Props) {
-  const href = section.cta_url || (section.category ? `/catalog?category=${section.category.slug}` : "/catalog");
+  const href =
+    section.cta_url ||
+    (section.category
+      ? `/catalog?category=${section.category.slug}`
+      : "/catalog");
 
   return (
     <motion.section
@@ -21,11 +27,16 @@ export default function CategoryBanner({ section }: Props) {
     >
       {/* Background image */}
       {section.bg_image && (
-        <Image src={section.bg_image} alt={section.title} fill className="object-cover opacity-40" />
+        <Image
+          src={section.bg_image}
+          alt={section.title}
+          fill
+          className="object-cover opacity-40"
+        />
       )}
 
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/30 to-transparent" />
 
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-center h-full px-10 py-10 space-y-3">
@@ -34,9 +45,13 @@ export default function CategoryBanner({ section }: Props) {
           {section.category?.name ?? "Collection"}
         </div>
         <h2 className="text-3xl font-black text-white">{section.title}</h2>
-        {section.subtitle && <p className="text-slate-300 text-sm max-w-md">{section.subtitle}</p>}
+        {section.subtitle && (
+          <p className="text-slate-300 text-sm max-w-md">{section.subtitle}</p>
+        )}
         <Button variant="luxury" size="lg" className="w-fit gap-2 mt-2" asChild>
-          <Link href={href}>{section.cta_label || "Shop Now"} <ArrowRight className="h-4 w-4" /></Link>
+          <Link href={href}>
+            {section.cta_label || "Shop Now"} <ArrowRight className="h-4 w-4" />
+          </Link>
         </Button>
       </div>
     </motion.section>

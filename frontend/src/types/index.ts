@@ -92,6 +92,12 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface Wishlist {
+  id: number;
+  products: Product[];
+  updated_at: string;
+}
+
 // ── Homepage ──────────────────────────────────────────────────────────────────
 export type SectionType = "hero_carousel" | "product_row" | "category_banner" | "promo_banner";
 

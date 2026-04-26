@@ -30,7 +30,7 @@ export default function PromoBanner({ section }: Props) {
         />
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-r from-black/30 to-transparent" />
 
       <div className="relative z-10 flex items-center justify-between h-full px-10 py-8">
         <div className="space-y-1">

@@ -223,3 +223,35 @@ class AdminUserDeleteView(APIView):
             return Response({"detail": "User not found."}, status=404)
         user.delete()
         return Response(status=204)
+
+
+class WishlistView(APIView):
+    """
+    GET  — return the user's wishlist (creates it if it doesn't exist yet)
+    POST — toggle a product: add if absent, remove if present
+    """
+    def get(self, request):
+        wishlist, _ = Wishlist.objects.get_or_create(user=request.user)
+        from .serializers import WishlistSerializer
+        return Response(WishlistSerializer(wishlist, context={"request": request}).data)
+
+    def post(self, request):
+        product_id = request.data.get("product_id")
+        if not product_id:
+            return Response({"detail": "product_id required."}, status=400)
+        from catalog.models import Product
+        try:
+            product = Product.objects.get(pk=product_id)
+        except Product.DoesNotExist:
+            return Response({"detail": "Product not found."}, status=404)
+
+        wishlist, _ = Wishlist.objects.get_or_create(user=request.user)
+        if wishlist.products.filter(pk=product_id).exists():
+            wishlist.products.remove(product)
+            action = "removed"
+        else:
+            wishlist.products.add(product)
+            action = "added"
+
+        from .serializers import WishlistSerializer
+        return Response({"action": action, **WishlistSerializer(wishlist, context={"request": request}).data})

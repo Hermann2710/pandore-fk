@@ -98,10 +98,10 @@ export default function HeroCarousel({ section }: Props) {
                 priority
               />
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-l from-emerald-900/30 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-l from-emerald-900/30 to-transparent" />
             )}
             {/* Gradient overlay blending into text side */}
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/20 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-r from-slate-900 via-slate-900/20 to-transparent" />
           </div>
         </motion.div>
       </AnimatePresence>
