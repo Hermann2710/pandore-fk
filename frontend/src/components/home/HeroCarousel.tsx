@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart";
+import { useCurrencyStore, formatPrice } from "@/store/currency";
 import type { HomepageSection } from "@/types";
 import { toast } from "sonner";
 
@@ -17,6 +18,7 @@ export default function HeroCarousel({ section }: Props) {
   const [current, setCurrent] = useState(0);
   const products = section.products;
   const addItem = useCartStore((s) => s.addItem);
+  const { currency } = useCurrencyStore();
 
   const prev = useCallback(
     () => setCurrent((i) => (i - 1 + products.length) % products.length),
@@ -66,7 +68,7 @@ export default function HeroCarousel({ section }: Props) {
               {product.description}
             </p>
             <p className="text-3xl font-bold text-emerald-400">
-              ${parseFloat(product.price).toFixed(2)}
+              {formatPrice(product.price, currency)}
             </p>
             <div className="flex gap-3 pt-2">
               <Button variant="link" size="lg" asChild>

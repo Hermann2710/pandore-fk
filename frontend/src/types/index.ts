@@ -121,6 +121,16 @@ export interface Payment {
   updated_at: string;
 }
 
+export interface Currency {
+  id: number;
+  code: string;
+  name: string;
+  symbol: string;
+  rate: string;
+  is_active: boolean;
+  is_default: boolean;
+}
+
 // Cart item lives only in Zustand (client-side)
 export interface CartItem {
   product: Product;

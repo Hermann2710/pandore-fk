@@ -149,7 +149,7 @@ function SectionForm({
                     className="accent-emerald-500"
                   />
                   <span className="text-sm flex-1 truncate">{p.name}</span>
-                  <span className="text-xs text-muted-foreground">${p.price}</span>
+                  <span className="text-xs text-muted-foreground">FCFA {parseFloat(p.price).toLocaleString("fr-FR")}</span>
                 </label>
               ))}
             </div>

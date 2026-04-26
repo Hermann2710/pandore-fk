@@ -1,5 +1,5 @@
 import api from "./axios";
-import type { Product, Category, Tag, Order, User, HomepageSection, ShippingAddress, Wishlist, PaymentMethod, Payment, Subscriber, Newsletter } from "@/types";
+import type { Product, Category, Tag, Order, User, HomepageSection, ShippingAddress, Wishlist, PaymentMethod, Payment, Subscriber, Newsletter, Currency } from "@/types";
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export const authApi = {
@@ -143,4 +143,13 @@ export const newsletterApi = {
   deleteNewsletter: (id: number) => api.delete(`/newsletter/admin/newsletters/${id}/`),
   sendNewsletter: (id: number) =>
     api.post<{ detail: string; sent_to: number }>(`/newsletter/admin/newsletters/${id}/send/`),
+};
+
+// ── Currencies ────────────────────────────────────────────────────────────────
+export const currenciesApi = {
+  list: () => api.get<Currency[]>("/currencies/"),
+  adminList: () => api.get<Currency[]>("/currencies/admin/"),
+  create: (data: Partial<Currency>) => api.post<Currency>("/currencies/admin/", data),
+  update: (id: number, data: Partial<Currency>) => api.patch<Currency>(`/currencies/admin/${id}/`, data),
+  remove: (id: number) => api.delete(`/currencies/admin/${id}/`),
 };

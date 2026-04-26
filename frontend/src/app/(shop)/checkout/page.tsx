@@ -23,6 +23,7 @@ import { useCheckout } from "@/hooks/useOrders";
 import { useShippingAddresses } from "@/hooks/useAddresses";
 import { usePaymentMethods } from "@/hooks/usePayments";
 import { useAuth } from "@/context/AuthContext";
+import { useCurrencyStore, formatPrice } from "@/store/currency";
 import { toast } from "sonner";
 import type { ShippingAddress, PaymentMethod } from "@/types";
 
@@ -313,6 +314,7 @@ export default function CheckoutPage() {
   const { mutate: checkout, isPending } = useCheckout();
   const { data: addresses = [] } = useShippingAddresses();
   const { data: methods = [], isLoading: loadingMethods } = usePaymentMethods();
+  const { currency } = useCurrencyStore();
 
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
@@ -433,10 +435,7 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                   <p className="text-sm font-semibold shrink-0">
-                    $
-                    {(parseFloat(item.product.price) * item.quantity).toFixed(
-                      2,
-                    )}
+                    {formatPrice(parseFloat(item.product.price) * item.quantity, currency)}
                   </p>
                 </div>
               ))}
@@ -444,7 +443,7 @@ export default function CheckoutPage() {
             <div className="border-t pt-3 space-y-1.5 text-sm">
               <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
-                <span>${totalPrice().toFixed(2)}</span>
+                <span>{formatPrice(totalPrice(), currency)}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Shipping</span>
@@ -452,7 +451,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between font-bold text-base pt-1 border-t">
                 <span>Total</span>
-                <span className="text-primary">${totalPrice().toFixed(2)}</span>
+                <span className="text-primary">{formatPrice(totalPrice(), currency)}</span>
               </div>
             </div>
             {shippingAddress && (

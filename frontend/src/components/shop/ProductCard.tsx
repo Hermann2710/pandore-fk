@@ -6,6 +6,7 @@ import { ShoppingCart, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCartStore } from "@/store/cart";
+import { useCurrencyStore, formatPrice } from "@/store/currency";
 import WishlistButton from "@/components/shop/WishlistButton";
 import type { Product } from "@/types";
 import { toast } from "sonner";
@@ -17,11 +18,12 @@ interface Props {
 
 export default function ProductCard({ product, index = 0 }: Props) {
   const addItem = useCartStore((s) => s.addItem);
+  const { currency } = useCurrencyStore();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     addItem(product);
-    toast.success(`${product.name} added to cart`, { description: `$${product.price}` });
+    toast.success(`${product.name} added to cart`, { description: formatPrice(product.price, currency) });
   };
 
   return (
@@ -74,7 +76,7 @@ export default function ProductCard({ product, index = 0 }: Props) {
             )}
 
             <div className="flex items-center justify-between pt-1">
-              <span className="text-lg font-bold text-primary">${parseFloat(product.price).toFixed(2)}</span>
+              <span className="text-lg font-bold text-primary">{formatPrice(product.price, currency)}</span>
               <motion.div whileTap={{ scale: 0.9 }}>
                 <Button size="sm" variant="luxury" onClick={handleAddToCart} disabled={product.stock === 0} className="gap-1.5">
                   <ShoppingCart className="h-3.5 w-3.5" /> Add

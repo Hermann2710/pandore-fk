@@ -4,6 +4,7 @@ import type { Order } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, MapPin, Clock } from "lucide-react";
+import { useCurrencyStore, formatPrice } from "@/store/currency";
 
 // Maps order status to a human-readable label and badge variant
 const STATUS_CONFIG: Record<
@@ -25,6 +26,7 @@ interface Props {
 
 export default function OrderCard({ order, index = 0 }: Props) {
   const config = STATUS_CONFIG[order.status];
+  const { currency } = useCurrencyStore();
 
   return (
     <motion.div
@@ -58,7 +60,7 @@ export default function OrderCard({ order, index = 0 }: Props) {
             {order.items.slice(0, 2).map((item) => (
               <div key={item.id} className="flex justify-between text-muted-foreground">
                 <span className="truncate">{item.product?.name ?? "Deleted product"} ×{item.quantity}</span>
-                <span>${item.subtotal}</span>
+                <span>{formatPrice(item.subtotal, currency)}</span>
               </div>
             ))}
             {order.items.length > 2 && (
@@ -68,7 +70,7 @@ export default function OrderCard({ order, index = 0 }: Props) {
 
           <div className="flex items-center justify-between pt-1 border-t">
             <span className="text-sm font-semibold">Total</span>
-            <span className="text-primary font-bold">${order.total_price}</span>
+            <span className="text-primary font-bold">{formatPrice(order.total_price, currency)}</span>
           </div>
         </CardContent>
       </Card>

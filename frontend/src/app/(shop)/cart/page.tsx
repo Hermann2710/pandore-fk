@@ -7,10 +7,12 @@ import { ShoppingCart, Trash2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCartStore } from "@/store/cart";
+import { useCurrencyStore, formatPrice } from "@/store/currency";
 
 export default function CartPage() {
   const router = useRouter();
   const { items, removeItem, updateQuantity, totalPrice } = useCartStore();
+  const { currency } = useCurrencyStore();
 
   if (items.length === 0) {
     return (
@@ -43,14 +45,14 @@ export default function CartPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold truncate">{item.product.name}</p>
-                      <p className="text-sm text-muted-foreground">${item.product.price} each</p>
+                      <p className="text-sm text-muted-foreground">{formatPrice(item.product.price, currency)} each</p>
                     </div>
                     <div className="flex items-center border rounded-md overflow-hidden">
                       <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="px-2 py-1 hover:bg-muted text-sm">−</button>
                       <span className="px-3 py-1 text-sm font-medium">{item.quantity}</span>
                       <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)} className="px-2 py-1 hover:bg-muted text-sm">+</button>
                     </div>
-                    <p className="font-bold text-primary w-20 text-right">${(parseFloat(item.product.price) * item.quantity).toFixed(2)}</p>
+                    <p className="font-bold text-primary w-20 text-right">{formatPrice(parseFloat(item.product.price) * item.quantity, currency)}</p>
                     <motion.button whileTap={{ scale: 0.85 }} onClick={() => removeItem(item.product.id)} className="text-muted-foreground hover:text-destructive transition-colors">
                       <Trash2 className="h-4 w-4" />
                     </motion.button>
@@ -69,12 +71,12 @@ export default function CartPage() {
                 {items.map((item) => (
                   <div key={item.product.id} className="flex justify-between text-muted-foreground">
                     <span className="truncate">{item.product.name} ×{item.quantity}</span>
-                    <span>${(parseFloat(item.product.price) * item.quantity).toFixed(2)}</span>
+                    <span>{formatPrice(parseFloat(item.product.price) * item.quantity, currency)}</span>
                   </div>
                 ))}
                 <div className="border-t pt-2 flex justify-between font-bold text-base">
                   <span>Total</span>
-                  <span className="text-primary">${totalPrice().toFixed(2)}</span>
+                  <span className="text-primary">{formatPrice(totalPrice(), currency)}</span>
                 </div>
               </div>
               <motion.div whileTap={{ scale: 0.97 }}>

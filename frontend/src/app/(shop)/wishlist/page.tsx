@@ -8,12 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useWishlist, useToggleWishlist } from "@/hooks/useWishlist";
 import { useCartStore } from "@/store/cart";
+import { useCurrencyStore, formatPrice } from "@/store/currency";
 import { toast } from "sonner";
 
 export default function WishlistPage() {
   const { data: wishlist, isLoading } = useWishlist();
   const { mutate: toggle } = useToggleWishlist();
   const addItem = useCartStore((s) => s.addItem);
+  const { currency } = useCurrencyStore();
 
   const products = wishlist?.products ?? [];
 
@@ -97,7 +99,7 @@ export default function WishlistPage() {
                     </div>
                   )}
 
-                  <p className="text-lg font-bold text-primary">${parseFloat(product.price).toFixed(2)}</p>
+                  <p className="text-lg font-bold text-primary">{formatPrice(product.price, currency)}</p>
 
                   <div className="flex gap-2">
                     <Button

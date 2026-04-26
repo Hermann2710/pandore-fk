@@ -56,7 +56,7 @@ function ProductForm({ initial, categories, tags, onSubmit, isPending }: {
             <SelectContent>{categories.map((c) => <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-        <div className="space-y-2"><Label>Price ($)</Label><Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
+        <div className="space-y-2"><Label>Price (XAF)</Label><Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
         <div className="space-y-2"><Label>Stock</Label><Input type="number" value={stock} onChange={(e) => setStock(e.target.value)} /></div>
         <div className="space-y-2 col-span-2">
           <Label>Description</Label>
@@ -149,7 +149,7 @@ export default function ProductsTab() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{product.category?.name ?? "—"}</td>
-                    <td className="px-4 py-3 font-semibold text-primary">${product.price}</td>
+                    <td className="px-4 py-3 font-semibold text-primary">FCFA {parseFloat(product.price).toLocaleString("fr-FR")}</td>
                     <td className="px-4 py-3"><span className={product.stock === 0 ? "text-destructive font-medium" : ""}>{product.stock}</span></td>
                     <td className="px-4 py-3"><Badge variant={product.is_active ? "emerald" : "secondary"}>{product.is_active ? "Active" : "Inactive"}</Badge></td>
                     <td className="px-4 py-3">

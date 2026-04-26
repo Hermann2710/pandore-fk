@@ -86,7 +86,7 @@ export default function OrdersTab() {
                     <td className="px-4 py-3 font-medium">#{order.id}</td>
                     <td className="px-4 py-3 text-muted-foreground">{order.customer.username}</td>
                     <td className="px-4 py-3 text-muted-foreground">{order.items.length}</td>
-                    <td className="px-4 py-3 font-semibold text-primary">${order.total_price}</td>
+                    <td className="px-4 py-3 font-semibold text-primary">FCFA {parseFloat(order.total_price).toLocaleString("fr-FR")}</td>
                     <td className="px-4 py-3"><Badge variant={STATUS_VARIANT[order.status] as any} className="capitalize">{order.status.replace("_", " ")}</Badge></td>
                     <td className="px-4 py-3 text-muted-foreground">{order.assignment?.delivery_man.username ?? "—"}</td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(order.created_at).toLocaleDateString()}</td>

@@ -21,7 +21,7 @@ function OverviewStats() {
   const revenue = allOrders?.filter((o) => o.status === "delivered").reduce((s, o) => s + parseFloat(o.total_price), 0) ?? 0;
 
   const stats = [
-    { label: "Total Revenue",  value: `$${revenue.toFixed(2)}`,                                                          icon: TrendingUp,    color: "text-emerald-500", bg: "bg-emerald-50" },
+    { label: "Total Revenue",  value: `FCFA ${revenue.toLocaleString("fr-FR")}`,                                                          icon: TrendingUp,    color: "text-emerald-500", bg: "bg-emerald-50" },
     { label: "Total Orders",   value: allOrders?.length ?? 0,                                                             icon: ClipboardList, color: "text-blue-500",    bg: "bg-blue-50" },
     { label: "Pending Orders", value: allOrders?.filter((o) => o.status === "pending").length ?? 0,                      icon: Package,       color: "text-amber-500",   bg: "bg-amber-50" },
     { label: "Products",       value: products?.length ?? 0,                                                              icon: ShoppingBag,   color: "text-purple-500",  bg: "bg-purple-50" },
@@ -56,7 +56,7 @@ function OverviewStats() {
                 <tr key={order.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                   <td className="px-4 py-3 font-medium">#{order.id}</td>
                   <td className="px-4 py-3 text-muted-foreground">{order.customer.username}</td>
-                  <td className="px-4 py-3 font-semibold text-primary">${order.total_price}</td>
+                  <td className="px-4 py-3 font-semibold text-primary">FCFA {parseFloat(order.total_price).toLocaleString("fr-FR")}</td>
                   <td className="px-4 py-3 capitalize text-muted-foreground">{order.status.replace("_", " ")}</td>
                   <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(order.created_at).toLocaleDateString()}</td>
                 </tr>

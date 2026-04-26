@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCartStore } from "@/store/cart";
 import { useRecentlyViewedStore } from "@/store/recentlyViewed";
 import { useProduct } from "@/hooks/useCatalog";
+import { useCurrencyStore, formatPrice } from "@/store/currency";
 import RelatedProducts from "@/components/shop/RelatedProducts";
 import RecentlyViewed from "@/components/shop/RecentlyViewed";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ export default function ProductDetailPage({
   const addItem = useCartStore((s) => s.addItem);
   const addToRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
   const { data: product, isLoading } = useProduct(slug);
+  const { currency } = useCurrencyStore();
 
   // Track this visit as soon as the product loads
   useEffect(() => {
@@ -149,7 +151,7 @@ export default function ProductDetailPage({
           {/* Price + stock */}
           <div className="flex items-end gap-4">
             <p className="text-4xl font-black text-primary">
-              ${parseFloat(product.price).toFixed(2)}
+              {formatPrice(product.price, currency)}
             </p>
             <p className="text-sm pb-1.5">
               {product.stock > 0 ? (
@@ -229,7 +231,7 @@ export default function ProductDetailPage({
               <p className="text-sm text-muted-foreground">
                 Subtotal:{" "}
                 <span className="font-bold text-foreground">
-                  ${(parseFloat(product.price) * quantity).toFixed(2)}
+                  {formatPrice(parseFloat(product.price) * quantity, currency)}
                 </span>
               </p>
             </div>

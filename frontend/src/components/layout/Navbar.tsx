@@ -27,19 +27,39 @@ import { useCartStore } from "@/store/cart";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useAuth } from "@/context/AuthContext";
 import { catalogApi } from "@/lib/api";
+import { useCurrencies } from "@/hooks/useCurrencies";
+import { useCurrencyStore } from "@/store/currency";
 import type { Category } from "@/types";
 
 // ── Top utility bar ───────────────────────────────────────────────────────────
 function TopBar() {
   const { user } = useAuth();
+  const { data: currencies = [] } = useCurrencies();
+  const { currency, setCurrency } = useCurrencyStore();
+
   return (
     <div className="bg-slate-900 text-slate-300 text-xs py-1.5 hidden md:block">
       <div className="mx-auto max-w-7xl px-4 flex items-center justify-between">
-        <div className="flex items-center gap-1">
-          <MapPin className="h-3 w-3 text-emerald-400" />
-          <span>
-            Deliver to <span className="text-white font-medium">Cameroon</span>
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <MapPin className="h-3 w-3 text-emerald-400" />
+            <span>Deliver to <span className="text-white font-medium">Cameroon</span></span>
+          </div>
+          {/* Currency selector */}
+          {currencies.length > 0 && (
+            <select
+              value={currency.code}
+              onChange={(e) => {
+                const found = currencies.find((c) => c.code === e.target.value);
+                if (found) setCurrency(found);
+              }}
+              className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-2 py-0.5 outline-none cursor-pointer hover:border-emerald-500 transition-colors"
+            >
+              {currencies.map((c) => (
+                <option key={c.code} value={c.code}>{c.code} — {c.symbol}</option>
+              ))}
+            </select>
+          )}
         </div>
         <div className="flex items-center gap-5">
           {user?.role === "admin" && (
