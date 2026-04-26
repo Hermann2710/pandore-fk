@@ -86,6 +86,23 @@ export interface Order {
   updated_at: string;
 }
 
+export interface Subscriber {
+  id: number;
+  email: string;
+  is_active: boolean;
+  subscribed_at: string;
+}
+
+export interface Newsletter {
+  id: number;
+  subject: string;
+  content: string;
+  status: "draft" | "sent";
+  sent_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface PaymentMethod {
   id: number;
   name: string;

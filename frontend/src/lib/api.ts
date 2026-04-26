@@ -1,5 +1,5 @@
 import api from "./axios";
-import type { Product, Category, Tag, Order, User, HomepageSection, ShippingAddress, Wishlist, PaymentMethod, Payment } from "@/types";
+import type { Product, Category, Tag, Order, User, HomepageSection, ShippingAddress, Wishlist, PaymentMethod, Payment, Subscriber, Newsletter } from "@/types";
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export const authApi = {
@@ -126,4 +126,21 @@ export const paymentsApi = {
     api.patch<PaymentMethod>(`/payments/admin/methods/${id}/`, data, { headers: { "Content-Type": "multipart/form-data" } }),
   deleteMethod: (id: number) => api.delete(`/payments/admin/methods/${id}/`),
   adminPayments: () => api.get<Payment[]>("/payments/admin/payments/"),
+};
+
+// ── Newsletter ────────────────────────────────────────────────────────────────
+export const newsletterApi = {
+  subscribe: (email: string) => api.post("/newsletter/subscribe/", { email }),
+  unsubscribe: (email: string) => api.post("/newsletter/unsubscribe/", { email }),
+  check: (email: string) => api.get<{ subscribed: boolean }>("/newsletter/check/", { params: { email } }),
+  // Admin
+  adminSubscribers: () => api.get<Subscriber[]>("/newsletter/admin/subscribers/"),
+  adminNewsletters: () => api.get<Newsletter[]>("/newsletter/admin/newsletters/"),
+  createNewsletter: (data: { subject: string; content: string }) =>
+    api.post<Newsletter>("/newsletter/admin/newsletters/", data),
+  updateNewsletter: (id: number, data: { subject: string; content: string }) =>
+    api.patch<Newsletter>(`/newsletter/admin/newsletters/${id}/`, data),
+  deleteNewsletter: (id: number) => api.delete(`/newsletter/admin/newsletters/${id}/`),
+  sendNewsletter: (id: number) =>
+    api.post<{ detail: string; sent_to: number }>(`/newsletter/admin/newsletters/${id}/send/`),
 };

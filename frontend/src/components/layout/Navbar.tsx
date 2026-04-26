@@ -292,35 +292,24 @@ function MenuItem({
   );
 }
 
-// ── Action icons (cart + wishlist) — visible to all logged-in users ───────────
 function ActionIcons() {
   const hydrated = useHydrated();
   const { user, isLoading } = useAuth();
-  const totalItems = useCartStore((s) => s.totalItems);
+  const cartCount = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
   const { data: wishlist } = useWishlist();
   const wishlistCount = wishlist?.products.length ?? 0;
 
-  // Don't render during auth resolution to avoid flicker
   if (isLoading || !user) return null;
 
   return (
     <div className="flex items-center gap-3 sm:gap-4">
       {/* Wishlist */}
-      <Link
-        href="/wishlist"
-        className="relative text-white hover:text-rose-300 transition-colors"
-        title="Wishlist"
-      >
+      <Link href="/wishlist" className="relative text-white hover:text-rose-300 transition-colors" title="Wishlist">
         <Heart className="h-6 w-6" />
         <AnimatePresence>
           {hydrated && wishlistCount > 0 && (
-            <motion.span
-              key={wishlistCount}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-              className="absolute -top-2 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white"
-            >
+            <motion.span key={wishlistCount} initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+              className="absolute -top-2 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
               {wishlistCount}
             </motion.span>
           )}
@@ -328,23 +317,14 @@ function ActionIcons() {
       </Link>
 
       {/* Cart */}
-      <Link
-        href="/cart"
-        className="flex items-end gap-1 text-white hover:text-emerald-300 transition-colors"
-        title="Cart"
-      >
+      <Link href="/cart" className="flex items-end gap-1 text-white hover:text-emerald-300 transition-colors" title="Cart">
         <div className="relative">
           <ShoppingCart className="h-6 w-6" />
           <AnimatePresence>
-            {hydrated && totalItems() > 0 && (
-              <motion.span
-                key={totalItems()}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                className="absolute -top-2 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-400 text-[9px] font-bold text-slate-900"
-              >
-                {totalItems()}
+            {hydrated && cartCount > 0 && (
+              <motion.span key={cartCount} initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                className="absolute -top-2 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-400 text-[9px] font-bold text-slate-900">
+                {cartCount}
               </motion.span>
             )}
           </AnimatePresence>

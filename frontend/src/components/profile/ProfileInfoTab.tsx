@@ -43,6 +43,9 @@ export default function ProfileInfoTab() {
     (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm((f) => ({ ...f, [field]: e.target.value }));
 
+  const avatarUrl = avatarPreview
+    ?? (user?.avatar ? `http://localhost:8000${user.avatar}` : null);
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -51,9 +54,9 @@ export default function ProfileInfoTab() {
           <div className="flex items-center gap-5">
             <div className="relative">
               <div className="h-20 w-20 rounded-2xl overflow-hidden bg-muted border">
-                {avatarPreview || user?.avatar ? (
+                {avatarUrl ? (
                   <Image
-                    src={avatarPreview ?? user!.avatar!}
+                    src={avatarUrl}
                     alt="Avatar"
                     fill
                     className="object-cover"

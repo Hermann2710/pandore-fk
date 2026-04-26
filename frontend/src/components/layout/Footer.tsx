@@ -1,6 +1,8 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { Package, MapPin, Mail, Phone, Globe, Share2, Send } from "lucide-react";
+import { useSubscribe } from "@/hooks/useNewsletter";
 
 const links = {
   Shop: [
@@ -18,6 +20,15 @@ const links = {
 };
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+  const { mutate: subscribe, isPending } = useSubscribe();
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    subscribe(email.trim(), { onSuccess: () => setEmail("") });
+  };
+
   return (
     <footer className="bg-slate-900 text-slate-400 mt-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12">
@@ -63,20 +74,30 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold text-sm mb-4">Stay Updated</h3>
             <p className="text-sm mb-3">Get notified about new arrivals and exclusive deals.</p>
-            <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
+            <form className="flex gap-2" onSubmit={handleSubscribe}>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
+                required
                 className="flex-1 min-w-0 rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none focus:border-emerald-500 transition-colors"
               />
               <button
                 type="submit"
-                className="shrink-0 rounded-lg bg-emerald-500 hover:bg-emerald-600 transition-colors px-3 py-2 text-sm font-semibold text-white"
+                disabled={isPending}
+                className="shrink-0 rounded-lg bg-emerald-500 hover:bg-emerald-600 disabled:opacity-60 transition-colors px-3 py-2 text-sm font-semibold text-white"
               >
-                OK
+                {isPending ? "…" : "OK"}
               </button>
             </form>
-            <div className="flex items-center gap-3 mt-5">
+            <p className="text-xs text-slate-500 mt-2">
+              Already subscribed?{" "}
+              <Link href="/profile?tab=newsletter" className="text-emerald-400 hover:underline">
+                Manage subscription →
+              </Link>
+            </p>
+            <div className="flex items-center gap-3 mt-4">
               {[Globe, Share2, Send].map((Icon, i) => (
                 <a key={i} href="#" className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 hover:bg-emerald-500 hover:text-white transition-colors">
                   <Icon className="h-4 w-4" />

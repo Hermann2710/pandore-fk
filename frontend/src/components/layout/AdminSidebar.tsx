@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, ShoppingBag, FolderOpen, Tag,
-  ClipboardList, Users, Package, ChevronLeft, LayoutTemplate, CreditCard,
+  ClipboardList, Users, Package, ChevronLeft, LayoutTemplate, CreditCard, Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +17,8 @@ const NAV_ITEMS = [
   { id: "tags",       label: "Tags",       icon: Tag,             href: "/admin/tags" },
   { id: "users",      label: "Users",      icon: Users,           href: "/admin/users" },
   { id: "homepage",   label: "Homepage",   icon: LayoutTemplate,  href: "/admin/homepage" },
-  { id: "payments",   label: "Payments",   icon: CreditCard,      href: "/admin/payments" },
+  { id: "payments",    label: "Payments",    icon: CreditCard, href: "/admin/payments" },
+  { id: "newsletter",  label: "Newsletter",  icon: Mail,       href: "/admin/newsletter" },
 ] as const;
 
 interface Props {
