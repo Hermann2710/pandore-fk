@@ -1,0 +1,70 @@
+from rest_framework import generics, permissions, filters
+from .models import Category, Tag, Product
+from .serializers import CategorySerializer, TagSerializer, ProductSerializer, ProductWriteSerializer
+
+
+class IsAdminRole(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_admin_role
+
+
+class CategoryListView(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class TagListView(generics.ListAPIView):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class ProductListView(generics.ListAPIView):
+    """
+    Public catalog endpoint with multi-axis filtering:
+    ?category=<slug>&tags=<slug>,<slug>&min_price=X&max_price=Y&search=<term>
+    """
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["name", "description", "tags__name", "category__name"]
+    ordering_fields = ["price", "created_at"]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        qs = Product.objects.filter(is_active=True).select_related("category").prefetch_related("tags", "attributes")
+        category = self.request.query_params.get("category")
+        tags = self.request.query_params.get("tags")
+        min_price = self.request.query_params.get("min_price")
+        max_price = self.request.query_params.get("max_price")
+
+        if category:
+            qs = qs.filter(category__slug=category)
+        if tags:
+            for tag_slug in tags.split(","):
+                qs = qs.filter(tags__slug=tag_slug.strip())
+        if min_price:
+            qs = qs.filter(price__gte=min_price)
+        if max_price:
+            qs = qs.filter(price__lte=max_price)
+        return qs.distinct()
+
+
+class ProductDetailView(generics.RetrieveAPIView):
+    queryset = Product.objects.filter(is_active=True).select_related("category").prefetch_related("tags", "attributes")
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
+    lookup_field = "slug"
+
+
+class AdminProductCreateView(generics.CreateAPIView):
+    serializer_class = ProductWriteSerializer
+    permission_classes = [IsAdminRole]
+
+
+class AdminProductUpdateView(generics.UpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductWriteSerializer
+    permission_classes = [IsAdminRole]
+    lookup_field = "slug"

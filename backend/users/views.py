@@ -1,0 +1,101 @@
+from django.conf import settings
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status, permissions
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+
+from .models import User
+from .serializers import RegisterSerializer, UserSerializer
+
+
+def _set_auth_cookies(response, refresh):
+    """Helper: stamp both JWT cookies onto a response object."""
+    access = str(refresh.access_token)
+    opts = dict(
+        httponly=True,
+        secure=settings.AUTH_COOKIE_SECURE,
+        samesite=settings.AUTH_COOKIE_SAMESITE,
+        path="/",
+    )
+    response.set_cookie(settings.AUTH_COOKIE_ACCESS, access, max_age=60 * 30, **opts)
+    response.set_cookie(
+        settings.AUTH_COOKIE_REFRESH, str(refresh), max_age=60 * 60 * 24 * 7, **opts
+    )
+
+
+class RegisterView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        refresh = RefreshToken.for_user(user)
+        response = Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+        _set_auth_cookies(response, refresh)
+        return response
+
+
+class LoginView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"detail": "Invalid credentials."}, status=400)
+
+        if not user.check_password(password):
+            return Response({"detail": "Invalid credentials."}, status=400)
+
+        refresh = RefreshToken.for_user(user)
+        response = Response(UserSerializer(user).data)
+        _set_auth_cookies(response, refresh)
+        return response
+
+
+class LogoutView(APIView):
+    def post(self, request):
+        response = Response({"detail": "Logged out."})
+        response.delete_cookie(settings.AUTH_COOKIE_ACCESS)
+        response.delete_cookie(settings.AUTH_COOKIE_REFRESH)
+        return response
+
+
+class RefreshView(APIView):
+    """
+    Silent token refresh — the frontend calls this when a 401 is received.
+    Reads the refresh cookie, issues a new access token cookie.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        raw = request.COOKIES.get(settings.AUTH_COOKIE_REFRESH)
+        if not raw:
+            return Response({"detail": "No refresh token."}, status=401)
+        try:
+            refresh = RefreshToken(raw)
+        except TokenError:
+            return Response({"detail": "Invalid refresh token."}, status=401)
+
+        response = Response({"detail": "Token refreshed."})
+        _set_auth_cookies(response, refresh)
+        return response
+
+
+class MeView(APIView):
+    def get(self, request):
+        return Response(UserSerializer(request.user).data)
+
+
+class DeliveryPersonnelListView(APIView):
+    """Admin-only: list all delivery users for the assignment dropdown."""
+
+    def get(self, request):
+        if not request.user.is_admin_role:
+            return Response(status=403)
+        qs = User.objects.filter(role=User.Role.DELIVERY)
+        return Response(UserSerializer(qs, many=True).data)
