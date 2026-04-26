@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/components/layout/QueryProvider";
-import Navbar from "@/components/layout/Navbar";
 import { Toaster } from "sonner";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -12,18 +11,15 @@ export const metadata: Metadata = {
   description: "Premium shopping experience",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+// Root layout is intentionally bare — each route group owns its own
+// shell (Navbar, sidebar, container). This avoids the navbar bleeding
+// into the admin and delivery dashboards.
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geist.variable} antialiased min-h-screen`}>
         <QueryProvider>
-          {/* <Navbar /> */}
-          <main>{children}</main>
-          {/* Sonner toast — positioned top-right with luxury styling */}
+          {children}
           <Toaster
             position="top-right"
             toastOptions={{

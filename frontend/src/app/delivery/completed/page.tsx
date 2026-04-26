@@ -1,0 +1,39 @@
+"use client";
+import { motion } from "framer-motion";
+import { CheckCircle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import DeliveryOrderCard from "@/components/delivery/DeliveryOrderCard";
+import { useDeliveryQueue } from "@/hooks/useOrders";
+
+export default function CompletedDeliveriesPage() {
+  const { data: orders, isLoading } = useDeliveryQueue();
+  const completed = orders?.filter((o) => o.status === "delivered") ?? [];
+
+  return (
+    <div className="space-y-6">
+      <p className="text-sm text-muted-foreground">
+        <span className="font-semibold text-foreground">{completed.length}</span> completed delivery{completed.length !== 1 ? "s" : ""}
+      </p>
+
+      {isLoading ? (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-72 rounded-xl" />)}
+        </div>
+      ) : completed.length === 0 ? (
+        <div className="flex flex-col items-center py-24 text-center">
+          <CheckCircle className="h-14 w-14 text-muted-foreground/20 mb-4" />
+          <p className="text-lg font-medium">No completed deliveries yet</p>
+          <p className="text-sm text-muted-foreground mt-1">Completed orders will appear here</p>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 opacity-80">
+          {completed.map((order, i) => (
+            <motion.div key={order.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
+              <DeliveryOrderCard order={order} index={i} />
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
