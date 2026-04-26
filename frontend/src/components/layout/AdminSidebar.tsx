@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, ShoppingBag, FolderOpen, Tag,
-  ClipboardList, Users, Package, ChevronLeft, Menu, X,
+  ClipboardList, Users, Package, ChevronLeft, LayoutTemplate,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { id: "categories", label: "Categories", icon: FolderOpen,      href: "/admin/categories" },
   { id: "tags",       label: "Tags",       icon: Tag,             href: "/admin/tags" },
   { id: "users",      label: "Users",      icon: Users,           href: "/admin/users" },
+  { id: "homepage",   label: "Homepage",   icon: LayoutTemplate,  href: "/admin/homepage" },
 ] as const;
 
 interface Props {

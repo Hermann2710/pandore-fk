@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Tag, AttributeKey, Product, ProductAttribute
+from .models import Category, Tag, AttributeKey, Product, ProductAttribute, HomepageSection
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -48,3 +48,34 @@ class ProductWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ["name", "slug", "description", "price", "stock", "image", "category", "tags", "is_active"]
+
+
+class HomepageSectionSerializer(serializers.ModelSerializer):
+    products = ProductSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
+    bg_image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = HomepageSection
+        fields = [
+            "id", "title", "subtitle", "type", "order", "is_active",
+            "products", "category", "cta_label", "cta_url",
+            "bg_color", "bg_image",
+        ]
+
+    def get_bg_image(self, obj):
+        request = self.context.get("request")
+        if obj.bg_image and request:
+            return request.build_absolute_uri(obj.bg_image.url)
+        return None
+
+
+class HomepageSectionWriteSerializer(serializers.ModelSerializer):
+    """Admin write — accepts product IDs and category ID."""
+    class Meta:
+        model = HomepageSection
+        fields = [
+            "title", "subtitle", "type", "order", "is_active",
+            "products", "category", "cta_label", "cta_url",
+            "bg_color", "bg_image",
+        ]

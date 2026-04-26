@@ -1,10 +1,11 @@
 from rest_framework import generics, permissions, filters, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Category, Tag, Product
+from .models import Category, Tag, Product, HomepageSection
 from .serializers import (
     CategorySerializer, TagSerializer,
     ProductSerializer, ProductWriteSerializer,
+    HomepageSectionSerializer, HomepageSectionWriteSerializer,
 )
 
 
@@ -136,3 +137,42 @@ class AdminProductDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method in ("PUT", "PATCH"):
             return ProductWriteSerializer
         return ProductSerializer
+
+
+# ── Homepage Sections ─────────────────────────────────────────────────────────
+
+class HomepageSectionListView(generics.ListAPIView):
+    """Public: returns all active sections ordered by `order` field."""
+    serializer_class = HomepageSectionSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return (
+            HomepageSection.objects.filter(is_active=True)
+            .prefetch_related("products__category", "products__tags", "products__attributes")
+            .select_related("category")
+        )
+
+
+class AdminHomepageSectionListCreateView(generics.ListCreateAPIView):
+    """Admin: list all sections (including inactive) or create a new one."""
+    permission_classes = [IsAdminRole]
+
+    def get_queryset(self):
+        return HomepageSection.objects.prefetch_related("products").select_related("category")
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return HomepageSectionWriteSerializer
+        return HomepageSectionSerializer
+
+
+class AdminHomepageSectionDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Admin: retrieve, update or delete a single section."""
+    queryset = HomepageSection.objects.prefetch_related("products").select_related("category")
+    permission_classes = [IsAdminRole]
+
+    def get_serializer_class(self):
+        if self.request.method in ("PUT", "PATCH"):
+            return HomepageSectionWriteSerializer
+        return HomepageSectionSerializer

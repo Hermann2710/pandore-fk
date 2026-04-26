@@ -59,3 +59,40 @@ class ProductAttribute(models.Model):
 
     def __str__(self):
         return f"{self.product.name} — {self.key.name}: {self.value}"
+
+
+class HomepageSection(models.Model):
+    """
+    Each row on the homepage is a Section — the admin picks the type,
+    title, which products to show, and the display order.
+    Fully data-driven: no code change needed to update the homepage.
+    """
+
+    class SectionType(models.TextChoices):
+        HERO_CAROUSEL   = "hero_carousel",   "Hero Carousel"
+        PRODUCT_ROW     = "product_row",     "Product Row"
+        CATEGORY_BANNER = "category_banner", "Category Banner"
+        PROMO_BANNER    = "promo_banner",     "Promo Banner"
+
+    title     = models.CharField(max_length=200)
+    subtitle  = models.CharField(max_length=300, blank=True)
+    type      = models.CharField(max_length=30, choices=SectionType.choices)
+    order     = models.PositiveIntegerField(default=0, help_text="Lower = higher on page")
+    is_active = models.BooleanField(default=True)
+
+    products  = models.ManyToManyField(Product, blank=True, related_name="homepage_sections")
+    category  = models.ForeignKey(
+        Category, null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="homepage_sections"
+    )
+
+    cta_label = models.CharField(max_length=100, blank=True, default="Shop Now")
+    cta_url   = models.CharField(max_length=200, blank=True)
+    bg_color  = models.CharField(max_length=20, blank=True)
+    bg_image  = models.ImageField(upload_to="homepage/", null=True, blank=True)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"[{self.type}] {self.title} (order={self.order})"

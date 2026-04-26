@@ -1,5 +1,5 @@
 import api from "./axios";
-import type { Product, Category, Tag, Order, User } from "@/types";
+import type { Product, Category, Tag, Order, User, HomepageSection } from "@/types";
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export const authApi = {
@@ -27,6 +27,8 @@ export const catalogApi = {
     api.get<Product>(`/catalog/products/${slug}/`),
   categories: () => api.get<Category[]>("/catalog/categories/"),
   tags: () => api.get<Tag[]>("/catalog/tags/"),
+  homepageSections: () =>
+    api.get<HomepageSection[]>("/catalog/homepage/"),
 };
 
 // ── Admin — Catalog CRUD ──────────────────────────────────────────────────────
@@ -62,6 +64,20 @@ export const adminCatalogApi = {
     api.patch<Tag>(`/catalog/admin/tags/${id}/`, data),
   deleteTag: (id: number) =>
     api.delete(`/catalog/admin/tags/${id}/`),
+
+  // Homepage sections
+  homepageSections: () =>
+    api.get<HomepageSection[]>("/catalog/admin/homepage/"),
+  createHomepageSection: (data: FormData) =>
+    api.post<HomepageSection>("/catalog/admin/homepage/", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  updateHomepageSection: (id: number, data: FormData) =>
+    api.patch<HomepageSection>(`/catalog/admin/homepage/${id}/`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  deleteHomepageSection: (id: number) =>
+    api.delete(`/catalog/admin/homepage/${id}/`),
 };
 
 // ── Orders ────────────────────────────────────────────────────────────────────

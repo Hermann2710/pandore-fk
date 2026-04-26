@@ -76,3 +76,21 @@ export interface CartItem {
   product: Product;
   quantity: number;
 }
+
+// ── Homepage ──────────────────────────────────────────────────────────────────
+export type SectionType = "hero_carousel" | "product_row" | "category_banner" | "promo_banner";
+
+export interface HomepageSection {
+  id: number;
+  title: string;
+  subtitle: string;
+  type: SectionType;
+  order: number;
+  is_active: boolean;
+  products: Product[];
+  category: Category | null;
+  cta_label: string;
+  cta_url: string;
+  bg_color: string;
+  bg_image: string | null;
+}

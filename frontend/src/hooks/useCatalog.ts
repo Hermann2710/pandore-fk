@@ -137,3 +137,60 @@ export function useDeleteTag() {
     onError: () => toast.error("Deletion failed — tag may be in use"),
   });
 }
+
+// ── Homepage ──────────────────────────────────────────────────────────────────
+
+export function useHomepageSections() {
+  return useQuery({
+    queryKey: ["homepage-sections"],
+    queryFn: () => catalogApi.homepageSections().then((r) => r.data),
+    staleTime: 2 * 60 * 1000,
+  });
+}
+
+export function useAdminHomepageSections() {
+  return useQuery({
+    queryKey: ["admin-homepage-sections"],
+    queryFn: () => adminCatalogApi.homepageSections().then((r) => r.data),
+  });
+}
+
+export function useCreateHomepageSection() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: adminCatalogApi.createHomepageSection,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-homepage-sections"] });
+      qc.invalidateQueries({ queryKey: ["homepage-sections"] });
+      toast.success("Section created");
+    },
+    onError: () => toast.error("Creation failed"),
+  });
+}
+
+export function useUpdateHomepageSection() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: FormData }) =>
+      adminCatalogApi.updateHomepageSection(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-homepage-sections"] });
+      qc.invalidateQueries({ queryKey: ["homepage-sections"] });
+      toast.success("Section updated");
+    },
+    onError: () => toast.error("Update failed"),
+  });
+}
+
+export function useDeleteHomepageSection() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: adminCatalogApi.deleteHomepageSection,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-homepage-sections"] });
+      qc.invalidateQueries({ queryKey: ["homepage-sections"] });
+      toast.success("Section deleted");
+    },
+    onError: () => toast.error("Deletion failed"),
+  });
+}
