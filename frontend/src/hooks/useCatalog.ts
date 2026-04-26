@@ -32,6 +32,19 @@ export function useProduct(slug: string) {
   });
 }
 
+// Fetches products from the same category, excluding the current one
+export function useRelatedProducts(categorySlug: string | undefined, excludeSlug: string) {
+  return useQuery({
+    queryKey: ["related-products", categorySlug, excludeSlug],
+    queryFn: () =>
+      catalogApi
+        .products({ category: categorySlug!, ordering: "-created_at" })
+        .then((r) => r.data.filter((p) => p.slug !== excludeSlug).slice(0, 8)),
+    enabled: !!categorySlug,
+    staleTime: 2 * 60 * 1000,
+  });
+}
+
 // ── Admin ─────────────────────────────────────────────────────────────────────
 
 export function useAdminProducts(search?: string) {
