@@ -29,18 +29,27 @@ class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
     assignment = DeliveryAssignmentSerializer(read_only=True)
     customer = UserSerializer(read_only=True)
+    payment = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = [
             "id", "customer", "status", "shipping_address",
-            "total_price", "items", "assignment", "created_at", "updated_at",
+            "total_price", "items", "assignment", "payment", "created_at", "updated_at",
         ]
+
+    def get_payment(self, obj):
+        from payments.serializers import PaymentSerializer
+        try:
+            return PaymentSerializer(obj.payment, context=self.context).data
+        except Exception:
+            return None
 
 
 class CreateOrderSerializer(serializers.Serializer):
     """Validates the checkout payload from the frontend cart."""
-    shipping_address = serializers.CharField()
+    shipping_address   = serializers.CharField()
+    payment_method_id  = serializers.IntegerField()
     items = serializers.ListField(
         child=serializers.DictField(child=serializers.IntegerField()),
         min_length=1,

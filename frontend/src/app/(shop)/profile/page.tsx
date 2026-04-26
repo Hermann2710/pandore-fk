@@ -8,9 +8,9 @@ import AddressesTab from "@/components/profile/AddressesTab";
 import ChangePasswordTab from "@/components/profile/ChangePasswordTab";
 
 const TABS = [
-  { id: "info",      label: "My Info",   icon: User },
+  { id: "info", label: "My Info", icon: User },
   { id: "addresses", label: "Addresses", icon: MapPin },
-  { id: "password",  label: "Password",  icon: Lock },
+  { id: "password", label: "Password", icon: Lock },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -20,9 +20,13 @@ export default function ProfilePage() {
   const [tab, setTab] = useState<TabId>("info");
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="space-y-8">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-5">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-5"
+      >
         <div className="relative">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-white text-2xl font-black shadow-lg shadow-primary/30">
             {user?.username?.[0]?.toUpperCase()}
@@ -33,7 +37,9 @@ export default function ProfilePage() {
         </div>
         <div>
           <h1 className="text-2xl font-bold">{user?.username}</h1>
-          <p className="text-sm text-muted-foreground capitalize">{user?.role} account</p>
+          <p className="text-sm text-muted-foreground capitalize">
+            {user?.role} account
+          </p>
         </div>
       </motion.div>
 
@@ -44,14 +50,21 @@ export default function ProfilePage() {
             key={t.id}
             onClick={() => setTab(t.id)}
             className={`relative flex-1 flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-medium transition-colors ${
-              tab === t.id ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+              tab === t.id
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {tab === t.id && (
-              <motion.div layoutId="profile-tab-bg" className="absolute inset-0 rounded-lg bg-white shadow-sm" transition={{ type: "spring", stiffness: 400, damping: 35 }} />
+              <motion.div
+                layoutId="profile-tab-bg"
+                className="absolute inset-0 rounded-lg bg-white shadow-sm"
+                transition={{ type: "spring", stiffness: 400, damping: 35 }}
+              />
             )}
             <span className="relative flex items-center gap-2">
-              <t.icon className="h-4 w-4" />{t.label}
+              <t.icon className="h-4 w-4" />
+              {t.label}
             </span>
           </button>
         ))}
@@ -66,9 +79,9 @@ export default function ProfilePage() {
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.2 }}
         >
-          {tab === "info"      && <ProfileInfoTab />}
+          {tab === "info" && <ProfileInfoTab />}
           {tab === "addresses" && <AddressesTab />}
-          {tab === "password"  && <ChangePasswordTab />}
+          {tab === "password" && <ChangePasswordTab />}
         </motion.div>
       </AnimatePresence>
     </div>

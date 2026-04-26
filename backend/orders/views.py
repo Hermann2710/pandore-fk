@@ -12,6 +12,7 @@ from .serializers import (
 from catalog.models import Product
 from users.models import User
 from core.permissions import IsAdminRole, IsDelivery
+from payments.models import PaymentMethod, Payment
 
 
 # ── Customer ─────────────────────────────────────────────────────────────────
@@ -38,6 +39,8 @@ class CheckoutView(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
+        payment_method = get_object_or_404(PaymentMethod, pk=data["payment_method_id"], is_active=True)
+
         order = Order.objects.create(
             customer=request.user,
             shipping_address=data["shipping_address"],
@@ -57,6 +60,9 @@ class CheckoutView(APIView):
 
         order.total_price = total
         order.save()
+
+        Payment.objects.create(order=order, method=payment_method)
+
         return Response(OrderSerializer(order, context={"request": request}).data, status=201)
 
 

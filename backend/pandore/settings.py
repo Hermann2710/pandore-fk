@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "authentication",
     "addresses",
     "wishlist",
+    "payments",
     "catalog",
     "orders",
 ]

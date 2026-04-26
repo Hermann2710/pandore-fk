@@ -16,10 +16,9 @@ export function useCheckout() {
   const clearCart = useCartStore((s) => s.clearCart);
   return useMutation({
     mutationFn: ordersApi.checkout,
-    onSuccess: () => {
+    onSuccess: (res) => {
       clearCart();
-      toast.success("Order placed successfully!", { description: "We'll notify you when it ships." });
-      router.push("/orders");
+      router.push(`/checkout/${res.data.id}/confirm`);
     },
     onError: () => toast.error("Checkout failed. Please try again."),
   });

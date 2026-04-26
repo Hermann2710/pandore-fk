@@ -86,6 +86,24 @@ export interface Order {
   updated_at: string;
 }
 
+export interface PaymentMethod {
+  id: number;
+  name: string;
+  instructions: string;
+  logo: string | null;
+  is_active: boolean;
+  order: number;
+}
+
+export interface Payment {
+  id: number;
+  method: PaymentMethod;
+  status: "pending" | "confirmed" | "failed";
+  transaction_ref: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // Cart item lives only in Zustand (client-side)
 export interface CartItem {
   product: Product;

@@ -1,5 +1,5 @@
 import api from "./axios";
-import type { Product, Category, Tag, Order, User, HomepageSection, ShippingAddress, Wishlist } from "@/types";
+import type { Product, Category, Tag, Order, User, HomepageSection, ShippingAddress, Wishlist, PaymentMethod, Payment } from "@/types";
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export const authApi = {
@@ -98,6 +98,7 @@ export const ordersApi = {
   myOrders: () => api.get<Order[]>("/orders/my-orders/"),
   checkout: (data: {
     shipping_address: string;
+    payment_method_id: number;
     items: { product_id: number; quantity: number }[];
   }) => api.post<Order>("/orders/checkout/", data),
   // Admin
@@ -111,4 +112,18 @@ export const ordersApi = {
   deliveryQueue: () => api.get<Order[]>("/orders/delivery/queue/"),
   updateStatus: (orderId: number) =>
     api.patch<Order>(`/orders/delivery/${orderId}/status/`),
+};
+
+// ── Payments ──────────────────────────────────────────────────────────────────
+export const paymentsApi = {
+  methods: () => api.get<PaymentMethod[]>("/payments/methods/"),
+  confirm: (orderId: number) => api.post<Payment>(`/payments/${orderId}/confirm/`),
+  // Admin
+  adminMethods: () => api.get<PaymentMethod[]>("/payments/admin/methods/"),
+  createMethod: (data: FormData) =>
+    api.post<PaymentMethod>("/payments/admin/methods/", data, { headers: { "Content-Type": "multipart/form-data" } }),
+  updateMethod: (id: number, data: FormData) =>
+    api.patch<PaymentMethod>(`/payments/admin/methods/${id}/`, data, { headers: { "Content-Type": "multipart/form-data" } }),
+  deleteMethod: (id: number) => api.delete(`/payments/admin/methods/${id}/`),
+  adminPayments: () => api.get<Payment[]>("/payments/admin/payments/"),
 };
