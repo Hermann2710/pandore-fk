@@ -19,6 +19,9 @@ INSTALLED_APPS = [
     "corsheaders",
     # Local apps
     "users",
+    "authentication",
+    "addresses",
+    "wishlist",
     "catalog",
     "orders",
 ]
@@ -77,7 +80,7 @@ AUTH_USER_MODEL = "users.User"
 # ── REST Framework ──────────────────────────────────────────────────────────
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "users.authentication.CookieJWTAuthentication",
+        "authentication.authentication.CookieJWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }

@@ -6,11 +6,12 @@ import { toast } from "sonner";
 const QK = ["wishlist"] as const;
 
 export function useWishlist() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   return useQuery({
     queryKey: QK,
     queryFn: () => authApi.wishlist().then((r) => r.data),
-    enabled: !!user, // only fetch when logged in
+    // Only fetch once auth has resolved AND user is logged in
+    enabled: !isLoading && !!user,
   });
 }
 

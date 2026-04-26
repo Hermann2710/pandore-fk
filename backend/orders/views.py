@@ -11,16 +11,7 @@ from .serializers import (
 )
 from catalog.models import Product
 from users.models import User
-
-
-class IsAdminRole(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_admin_role
-
-
-class IsDelivery(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_delivery
+from core.permissions import IsAdminRole, IsDelivery
 
 
 # ── Customer ─────────────────────────────────────────────────────────────────

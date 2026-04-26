@@ -13,14 +13,16 @@ interface Props {
 }
 
 export default function WishlistButton({ productId, className, size = "md" }: Props) {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
   const isWishlisted = useIsWishlisted(productId);
   const { mutate: toggle, isPending } = useToggleWishlist();
 
   const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // prevent navigation when inside a Link
+    e.preventDefault();
     e.stopPropagation();
+    // Wait for auth to resolve before deciding — avoids redirect during initial load
+    if (isLoading) return;
     if (!user) { router.push("/login"); return; }
     toggle(productId);
   };

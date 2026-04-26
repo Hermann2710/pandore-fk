@@ -3,11 +3,6 @@ from django.conf import settings
 
 
 class CookieJWTAuthentication(JWTAuthentication):
-    """
-    Reads the JWT access token from an HTTP-only cookie instead of
-    the Authorization header — keeps tokens out of JS memory entirely.
-    """
-
     def authenticate(self, request):
         raw_token = request.COOKIES.get(settings.AUTH_COOKIE_ACCESS)
         if raw_token is None:

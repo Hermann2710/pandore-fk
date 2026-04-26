@@ -10,26 +10,26 @@ export const authApi = {
     api.post<User>("/auth/register/", data),
   logout: () => api.post("/auth/logout/"),
   me: () => api.get<User>("/auth/me/"),
-  deliveryPersonnel: () => api.get<User[]>("/auth/delivery-personnel/"),
+  deliveryPersonnel: () => api.get<User[]>("/users/delivery-personnel/"),
   // Admin — user management
-  adminUsers: () => api.get<User[]>("/auth/admin/users/"),
+  adminUsers: () => api.get<User[]>("/users/admin/users/"),
   updateUserRole: (userId: number, data: { role?: string; phone?: string; is_active?: boolean }) =>
-    api.patch<User>(`/auth/admin/users/${userId}/`, data),
+    api.patch<User>(`/users/admin/users/${userId}/`, data),
   deleteUser: (userId: number) =>
-    api.delete(`/auth/admin/users/${userId}/delete/`),
+    api.delete(`/users/admin/users/${userId}/delete/`),
   // Self-service profile
   updateProfile: (data: FormData) =>
-    api.patch<User>("/auth/profile/", data, { headers: { "Content-Type": "multipart/form-data" } }),
+    api.patch<User>("/users/profile/", data, { headers: { "Content-Type": "multipart/form-data" } }),
   changePassword: (data: { current_password: string; new_password: string }) =>
-    api.post("/auth/password/", data),
+    api.post("/users/password/", data),
   // Shipping addresses
-  addresses: () => api.get<ShippingAddress[]>("/auth/addresses/"),
-  createAddress: (data: Partial<ShippingAddress>) => api.post<ShippingAddress>("/auth/addresses/", data),
-  updateAddress: (id: number, data: Partial<ShippingAddress>) => api.patch<ShippingAddress>(`/auth/addresses/${id}/`, data),
-  deleteAddress: (id: number) => api.delete(`/auth/addresses/${id}/`),
+  addresses: () => api.get<ShippingAddress[]>("/addresses/"),
+  createAddress: (data: Partial<ShippingAddress>) => api.post<ShippingAddress>("/addresses/", data),
+  updateAddress: (id: number, data: Partial<ShippingAddress>) => api.patch<ShippingAddress>(`/addresses/${id}/`, data),
+  deleteAddress: (id: number) => api.delete(`/addresses/${id}/`),
   // Wishlist
-  wishlist: () => api.get<Wishlist>("/auth/wishlist/"),
-  toggleWishlist: (product_id: number) => api.post<Wishlist & { action: "added" | "removed" }>("/auth/wishlist/", { product_id }),
+  wishlist: () => api.get<Wishlist>("/wishlist/"),
+  toggleWishlist: (product_id: number) => api.post<Wishlist & { action: "added" | "removed" }>("/wishlist/", { product_id }),
 };
 
 // ── Public Catalog ────────────────────────────────────────────────────────────

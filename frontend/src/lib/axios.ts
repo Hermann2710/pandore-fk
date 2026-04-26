@@ -1,12 +1,24 @@
 import axios from "axios";
 
-// Single Axios instance — all API calls go through here
+const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
-  withCredentials: true, // Send HTTP-only cookies on every request
+  baseURL: BASE,
+  withCredentials: true, // send HTTP-only JWT cookies on every request
 });
 
-// Track whether a token refresh is already in flight to avoid cascading 401s
+// Endpoints that should NEVER trigger a redirect on 401.
+// These are either the auth flow itself or optional background fetches.
+const SILENT_ENDPOINTS = [
+  "/auth/me/",
+  "/auth/refresh/",
+  "/auth/login/",
+  "/auth/register/",
+];
+
+const isSilent = (url: string = "") =>
+  SILENT_ENDPOINTS.some((e) => url.includes(e));
+
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (value?: unknown) => void;
@@ -18,47 +30,47 @@ const processQueue = (error: unknown) => {
   failedQueue = [];
 };
 
-// Response interceptor: on 401, silently refresh the access token cookie
-// then replay the original request — the user never sees a logout flash
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        // Queue this request until the refresh resolves
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then(() => api(originalRequest))
-          .catch((err) => Promise.reject(err));
-      }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/auth/refresh/`,
-          {},
-          { withCredentials: true }
-        );
-        processQueue(null);
-        return api(originalRequest);
-      } catch (refreshError) {
-        processQueue(refreshError);
-        // Refresh failed — redirect to login
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
-        }
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
-      }
+    // Not a 401, or already retried — just reject
+    if (error.response?.status !== 401 || originalRequest._retry) {
+      return Promise.reject(error);
     }
 
-    return Promise.reject(error);
+    // Silent endpoints: never refresh or redirect, just reject cleanly
+    if (isSilent(originalRequest.url)) {
+      return Promise.reject(error);
+    }
+
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      })
+        .then(() => api(originalRequest))
+        .catch((err) => Promise.reject(err));
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      // Attempt a silent token refresh using the refresh cookie
+      await axios.post(`${BASE}/auth/refresh/`, {}, { withCredentials: true });
+      processQueue(null);
+      return api(originalRequest);
+    } catch (refreshError) {
+      processQueue(refreshError);
+      // Refresh failed — the session is truly expired, redirect to login
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
   }
 );
 

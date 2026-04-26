@@ -7,11 +7,7 @@ from .serializers import (
     ProductSerializer, ProductWriteSerializer,
     HomepageSectionSerializer, HomepageSectionWriteSerializer,
 )
-
-
-class IsAdminRole(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_admin_role
+from core.permissions import IsAdminRole
 
 
 # ── Public ────────────────────────────────────────────────────────────────────

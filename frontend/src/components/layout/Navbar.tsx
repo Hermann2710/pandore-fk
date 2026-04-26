@@ -183,12 +183,13 @@ function MenuItem({ href, icon: Icon, label, onClick }: { href: string; icon: Re
 // ── Action icons (cart + wishlist) — visible to all logged-in users ───────────
 function ActionIcons() {
   const hydrated = useHydrated();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const totalItems = useCartStore((s) => s.totalItems);
   const { data: wishlist } = useWishlist();
   const wishlistCount = wishlist?.products.length ?? 0;
 
-  if (!user) return null;
+  // Don't render during auth resolution to avoid flicker
+  if (isLoading || !user) return null;
 
   return (
     <div className="flex items-center gap-3 sm:gap-4">
