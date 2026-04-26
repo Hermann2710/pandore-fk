@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${geist.variable} antialiased min-h-screen`}>
         <QueryProvider>
           <Navbar />
-          <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">{children}</main>
+          <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6">{children}</main>
           {/* Sonner toast — positioned top-right with luxury styling */}
           <Toaster
             position="top-right"
