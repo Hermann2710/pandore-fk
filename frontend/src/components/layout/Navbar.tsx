@@ -5,9 +5,22 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  ShoppingCart, Package, LogOut, LayoutDashboard, Truck,
-  Search, ChevronDown, User, MapPin, Menu, X,
-  Heart, Bell, Shield, Tag, FolderOpen,
+  ShoppingCart,
+  Package,
+  LogOut,
+  LayoutDashboard,
+  Truck,
+  Search,
+  ChevronDown,
+  User,
+  MapPin,
+  Menu,
+  X,
+  Heart,
+  Bell,
+  Shield,
+  Tag,
+  FolderOpen,
 } from "lucide-react";
 import { useCartStore } from "@/store/cart";
 import { useAuthStore } from "@/store/auth";
@@ -23,22 +36,39 @@ function TopBar() {
       <div className="mx-auto max-w-7xl px-4 flex items-center justify-between">
         <div className="flex items-center gap-1">
           <MapPin className="h-3 w-3 text-emerald-400" />
-          <span>Deliver to <span className="text-white font-medium">France</span></span>
+          <span>
+            Deliver to <span className="text-white font-medium">Cameroon</span>
+          </span>
         </div>
         <div className="flex items-center gap-5">
           {user?.role === "admin" && (
-            <Link href="/admin" className="hover:text-white transition-colors flex items-center gap-1">
+            <Link
+              href="/admin"
+              className="hover:text-white transition-colors flex items-center gap-1"
+            >
               <Shield className="h-3 w-3 text-emerald-400" /> Admin Panel
             </Link>
           )}
           {user?.role === "delivery" && (
-            <Link href="/delivery" className="hover:text-white transition-colors flex items-center gap-1">
+            <Link
+              href="/delivery"
+              className="hover:text-white transition-colors flex items-center gap-1"
+            >
               <Truck className="h-3 w-3 text-emerald-400" /> My Deliveries
             </Link>
           )}
-          <Link href="/catalog" className="hover:text-white transition-colors">New Arrivals</Link>
-          <Link href="/catalog?ordering=price" className="hover:text-white transition-colors">Best Sellers</Link>
-          <span className="text-emerald-400 font-medium">Free shipping over $150</span>
+          <Link href="/catalog" className="hover:text-white transition-colors">
+            New Arrivals
+          </Link>
+          <Link
+            href="/catalog?ordering=price"
+            className="hover:text-white transition-colors"
+          >
+            Best Sellers
+          </Link>
+          <span className="text-emerald-400 font-medium">
+            Free shipping over $150
+          </span>
         </div>
       </div>
     </div>
@@ -98,7 +128,8 @@ function AccountMenu() {
   // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -148,7 +179,11 @@ function AccountMenu() {
                 </Link>
                 <p className="text-xs text-center text-slate-500">
                   New customer?{" "}
-                  <Link href="/login" onClick={() => setOpen(false)} className="text-emerald-600 font-medium hover:underline">
+                  <Link
+                    href="/login"
+                    onClick={() => setOpen(false)}
+                    className="text-emerald-600 font-medium hover:underline"
+                  >
                     Start here
                   </Link>
                 </p>
@@ -157,7 +192,9 @@ function AccountMenu() {
               <div className="py-2">
                 <div className="px-4 py-2 border-b">
                   <p className="text-xs text-slate-500">Signed in as</p>
-                  <p className="font-semibold text-sm text-slate-900 truncate">{user.username}</p>
+                  <p className="font-semibold text-sm text-slate-900 truncate">
+                    {user.username}
+                  </p>
                   <span className="inline-block mt-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 capitalize">
                     {user.role}
                   </span>
@@ -165,20 +202,43 @@ function AccountMenu() {
                 <div className="py-1">
                   {user.role === "customer" && (
                     <>
-                      <MenuItem href="/orders" icon={Package} label="My Orders" onClick={() => setOpen(false)} />
-                      <MenuItem href="/cart" icon={ShoppingCart} label="My Cart" onClick={() => setOpen(false)} />
+                      <MenuItem
+                        href="/orders"
+                        icon={Package}
+                        label="My Orders"
+                        onClick={() => setOpen(false)}
+                      />
+                      <MenuItem
+                        href="/cart"
+                        icon={ShoppingCart}
+                        label="My Cart"
+                        onClick={() => setOpen(false)}
+                      />
                     </>
                   )}
                   {user.role === "admin" && (
-                    <MenuItem href="/admin" icon={LayoutDashboard} label="Admin Dashboard" onClick={() => setOpen(false)} />
+                    <MenuItem
+                      href="/admin"
+                      icon={LayoutDashboard}
+                      label="Admin Dashboard"
+                      onClick={() => setOpen(false)}
+                    />
                   )}
                   {user.role === "delivery" && (
-                    <MenuItem href="/delivery" icon={Truck} label="My Queue" onClick={() => setOpen(false)} />
+                    <MenuItem
+                      href="/delivery"
+                      icon={Truck}
+                      label="My Queue"
+                      onClick={() => setOpen(false)}
+                    />
                   )}
                 </div>
                 <div className="border-t py-1">
                   <button
-                    onClick={() => { logout(); setOpen(false); }}
+                    onClick={() => {
+                      logout();
+                      setOpen(false);
+                    }}
                     className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >
                     <LogOut className="h-4 w-4" /> Sign Out
@@ -193,7 +253,17 @@ function AccountMenu() {
   );
 }
 
-function MenuItem({ href, icon: Icon, label, onClick }: { href: string; icon: React.ElementType; label: string; onClick: () => void }) {
+function MenuItem({
+  href,
+  icon: Icon,
+  label,
+  onClick,
+}: {
+  href: string;
+  icon: React.ElementType;
+  label: string;
+  onClick: () => void;
+}) {
   return (
     <Link
       href={href}
@@ -213,7 +283,10 @@ function CartIcon() {
   if (user?.role !== "customer") return null;
 
   return (
-    <Link href="/cart" className="flex items-end gap-1 text-white hover:text-emerald-300 transition-colors group">
+    <Link
+      href="/cart"
+      className="flex items-end gap-1 text-white hover:text-emerald-300 transition-colors group"
+    >
       <div className="relative">
         <ShoppingCart className="h-7 w-7" />
         <AnimatePresence>
@@ -305,7 +378,9 @@ function CategoryStrip() {
                     <div className="bg-emerald-500 px-4 py-3">
                       <p className="text-white font-bold text-sm">{cat.name}</p>
                       {cat.description && (
-                        <p className="text-emerald-100 text-xs mt-0.5">{cat.description}</p>
+                        <p className="text-emerald-100 text-xs mt-0.5">
+                          {cat.description}
+                        </p>
                       )}
                     </div>
                     <div className="p-3 space-y-1">
@@ -354,13 +429,22 @@ function CategoryStrip() {
 
           {/* Right side quick links */}
           <div className="ml-auto flex items-center gap-1">
-            <Link href="/catalog?tags=new-arrival" className="px-3 h-full flex items-center text-xs text-emerald-400 font-semibold hover:text-emerald-300 transition-colors">
+            <Link
+              href="/catalog?tags=new-arrival"
+              className="px-3 h-full flex items-center text-xs text-emerald-400 font-semibold hover:text-emerald-300 transition-colors"
+            >
               New Arrivals
             </Link>
-            <Link href="/catalog?tags=bestseller" className="px-3 h-full flex items-center text-xs text-amber-400 font-semibold hover:text-amber-300 transition-colors">
+            <Link
+              href="/catalog?tags=bestseller"
+              className="px-3 h-full flex items-center text-xs text-amber-400 font-semibold hover:text-amber-300 transition-colors"
+            >
               Bestsellers
             </Link>
-            <Link href="/catalog?tags=limited-edition" className="px-3 h-full flex items-center text-xs text-rose-400 font-semibold hover:text-rose-300 transition-colors">
+            <Link
+              href="/catalog?tags=limited-edition"
+              className="px-3 h-full flex items-center text-xs text-rose-400 font-semibold hover:text-rose-300 transition-colors"
+            >
               Limited Edition
             </Link>
           </div>
@@ -372,7 +456,9 @@ function CategoryStrip() {
             onClick={() => setMobileOpen((v) => !v)}
             className="flex items-center justify-between w-full py-2.5 text-sm text-white font-medium"
           >
-            <span className="flex items-center gap-2"><Menu className="h-4 w-4" /> Browse Categories</span>
+            <span className="flex items-center gap-2">
+              <Menu className="h-4 w-4" /> Browse Categories
+            </span>
             <motion.div animate={{ rotate: mobileOpen ? 180 : 0 }}>
               <ChevronDown className="h-4 w-4" />
             </motion.div>
@@ -435,7 +521,9 @@ export default function Navbar() {
               <span className="text-xl font-black tracking-tight text-white">
                 PAN<span className="text-emerald-400">DORE</span>
               </span>
-              <p className="text-[9px] text-slate-400 -mt-1 tracking-widest uppercase">Luxury Store</p>
+              <p className="text-[9px] text-slate-400 -mt-1 tracking-widest uppercase">
+                Luxury Store
+              </p>
             </div>
           </Link>
 

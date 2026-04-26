@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
-import QueryProvider from "@/components/QueryProvider";
-import Navbar from "@/components/Navbar";
+import QueryProvider from "@/components/layout/QueryProvider";
+import Navbar from "@/components/layout/Navbar";
 import { Toaster } from "sonner";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -12,13 +12,17 @@ export const metadata: Metadata = {
   description: "Premium shopping experience",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geist.variable} antialiased min-h-screen`}>
         <QueryProvider>
-          <Navbar />
-          <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6">{children}</main>
+          {/* <Navbar /> */}
+          <main>{children}</main>
           {/* Sonner toast — positioned top-right with luxury styling */}
           <Toaster
             position="top-right"

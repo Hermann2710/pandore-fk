@@ -1,23 +1,17 @@
 "use client";
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Pencil, Trash2, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { adminCatalogApi } from "@/lib/api";
-import { toast } from "sonner";
+import { useAdminCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from "@/hooks/useCatalog";
 import type { Category } from "@/types";
 
-// Reusable form for both create and edit
 function CategoryForm({
-  initial,
-  onSubmit,
-  isPending,
+  initial, onSubmit, isPending,
 }: {
   initial?: Category;
   onSubmit: (data: { name: string; slug: string; description: string }) => void;
@@ -27,7 +21,6 @@ function CategoryForm({
   const [slug, setSlug] = useState(initial?.slug ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
 
-  // Auto-generate slug from name when creating
   const handleNameChange = (v: string) => {
     setName(v);
     if (!initial) setSlug(v.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""));
@@ -47,12 +40,7 @@ function CategoryForm({
         <Label>Description</Label>
         <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short description…" />
       </div>
-      <Button
-        variant="luxury"
-        className="w-full"
-        onClick={() => onSubmit({ name, slug, description })}
-        disabled={!name || !slug || isPending}
-      >
+      <Button variant="luxury" className="w-full" onClick={() => onSubmit({ name, slug, description })} disabled={!name || !slug || isPending}>
         {isPending ? "Saving…" : initial ? "Save Changes" : "Create Category"}
       </Button>
     </div>
@@ -60,13 +48,8 @@ function CategoryForm({
 }
 
 function EditDialog({ category }: { category: Category }) {
-  const qc = useQueryClient();
   const [open, setOpen] = useState(false);
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: Partial<Category>) => adminCatalogApi.updateCategory(category.id, data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-categories"] }); toast.success("Category updated"); setOpen(false); },
-    onError: () => toast.error("Update failed"),
-  });
+  const { mutate, isPending } = useUpdateCategory();
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -74,32 +57,21 @@ function EditDialog({ category }: { category: Category }) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader><DialogTitle>Edit Category</DialogTitle></DialogHeader>
-        <CategoryForm initial={category} onSubmit={mutate} isPending={isPending} />
+        <CategoryForm
+          initial={category}
+          onSubmit={(data) => mutate({ id: category.id, data }, { onSuccess: () => setOpen(false) })}
+          isPending={isPending}
+        />
       </DialogContent>
     </Dialog>
   );
 }
 
 export default function CategoriesTab() {
-  const qc = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
-
-  const { data: categories, isLoading } = useQuery({
-    queryKey: ["admin-categories"],
-    queryFn: () => adminCatalogApi.categories().then((r) => r.data),
-  });
-
-  const { mutate: create, isPending: creating } = useMutation({
-    mutationFn: adminCatalogApi.createCategory,
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-categories"] }); toast.success("Category created"); setCreateOpen(false); },
-    onError: () => toast.error("Creation failed"),
-  });
-
-  const { mutate: remove } = useMutation({
-    mutationFn: adminCatalogApi.deleteCategory,
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-categories"] }); toast.success("Category deleted"); },
-    onError: () => toast.error("Deletion failed — category may have products"),
-  });
+  const { data: categories, isLoading } = useAdminCategories();
+  const { mutate: create, isPending: creating } = useCreateCategory();
+  const { mutate: remove } = useDeleteCategory();
 
   return (
     <div className="space-y-6">
@@ -111,13 +83,13 @@ export default function CategoriesTab() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>New Category</DialogTitle></DialogHeader>
-            <CategoryForm onSubmit={create} isPending={creating} />
+            <CategoryForm onSubmit={(data) => create(data, { onSuccess: () => setCreateOpen(false) })} isPending={creating} />
           </DialogContent>
         </Dialog>
       </div>
 
       {isLoading ? (
-        <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 rounded-xl" />)}</div>
+        <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-xl" />)}</div>
       ) : (
         <div className="rounded-xl border overflow-hidden">
           <table className="w-full text-sm">
@@ -129,25 +101,14 @@ export default function CategoriesTab() {
             <tbody>
               <AnimatePresence>
                 {categories?.map((cat, i) => (
-                  <motion.tr
-                    key={cat.id}
-                    initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
-                    transition={{ delay: i * 0.04 }}
-                    className="border-b last:border-0 hover:bg-muted/30 transition-colors"
-                  >
-                    <td className="px-4 py-3 font-medium flex items-center gap-2">
-                      <FolderOpen className="h-4 w-4 text-primary" />{cat.name}
-                    </td>
+                  <motion.tr key={cat.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ delay: i * 0.04 }} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                    <td className="px-4 py-3 font-medium flex items-center gap-2"><FolderOpen className="h-4 w-4 text-primary" />{cat.name}</td>
                     <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{cat.slug}</td>
                     <td className="px-4 py-3 text-muted-foreground truncate max-w-xs">{cat.description || "—"}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 justify-end">
                         <EditDialog category={cat} />
-                        <Button
-                          size="icon" variant="ghost"
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                          onClick={() => { if (confirm(`Delete "${cat.name}"?`)) remove(cat.id); }}
-                        >
+                        <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => { if (confirm(`Delete "${cat.name}"?`)) remove(cat.id); }}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
