@@ -5,8 +5,12 @@ from rest_framework import status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
-from .models import User
-from .serializers import RegisterSerializer, UserSerializer
+from .models import User, ShippingAddress
+from .serializers import (
+    RegisterSerializer, UserSerializer,
+    UserProfileUpdateSerializer, ChangePasswordSerializer,
+    ShippingAddressSerializer,
+)
 
 
 def _set_auth_cookies(response, refresh):
@@ -89,6 +93,72 @@ class RefreshView(APIView):
 class MeView(APIView):
     def get(self, request):
         return Response(UserSerializer(request.user).data)
+
+
+class UpdateProfileView(APIView):
+    """
+    Authenticated users update their own profile.
+    Supports multipart/form-data for avatar upload.
+    """
+    def patch(self, request):
+        serializer = UserProfileUpdateSerializer(
+            request.user, data=request.data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(UserSerializer(request.user).data)
+
+
+class ChangePasswordView(APIView):
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        if not user.check_password(serializer.validated_data["current_password"]):
+            return Response({"detail": "Current password is incorrect."}, status=400)
+        user.set_password(serializer.validated_data["new_password"])
+        user.save()
+        return Response({"detail": "Password updated successfully."})
+
+
+class ShippingAddressListCreateView(APIView):
+    """List all saved addresses or create a new one."""
+
+    def get(self, request):
+        addresses = ShippingAddress.objects.filter(user=request.user)
+        return Response(ShippingAddressSerializer(addresses, many=True).data)
+
+    def post(self, request):
+        serializer = ShippingAddressSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=201)
+
+
+class ShippingAddressDetailView(APIView):
+    """Retrieve, update or delete a single address."""
+
+    def _get_address(self, request, pk):
+        try:
+            return ShippingAddress.objects.get(pk=pk, user=request.user)
+        except ShippingAddress.DoesNotExist:
+            return None
+
+    def patch(self, request, pk):
+        address = self._get_address(request, pk)
+        if not address:
+            return Response(status=404)
+        serializer = ShippingAddressSerializer(address, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        address = self._get_address(request, pk)
+        if not address:
+            return Response(status=404)
+        address.delete()
+        return Response(status=204)
 
 
 class DeliveryPersonnelListView(APIView):

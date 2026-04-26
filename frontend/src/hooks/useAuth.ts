@@ -96,3 +96,55 @@ export function useDeleteUser() {
     onError: () => toast.error("Deletion failed"),
   });
 }
+
+export function useUpdateProfile() {
+  const setUser = useAuthStore((s) => s.setUser);
+  return useMutation({
+    mutationFn: authApi.updateProfile,
+    onSuccess: ({ data }) => { setUser(data); toast.success("Profile updated"); },
+    onError: (err: any) => toast.error(err?.response?.data?.username?.[0] ?? err?.response?.data?.email?.[0] ?? "Update failed"),
+  });
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: authApi.changePassword,
+    onSuccess: () => toast.success("Password changed successfully"),
+    onError: (err: any) => toast.error(err?.response?.data?.detail ?? "Incorrect current password"),
+  });
+}
+
+export function useShippingAddresses() {
+  return useQuery({
+    queryKey: ["shipping-addresses"],
+    queryFn: () => authApi.addresses().then((r) => r.data),
+  });
+}
+
+export function useCreateAddress() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: authApi.createAddress,
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["shipping-addresses"] }); toast.success("Address saved"); },
+    onError: () => toast.error("Failed to save address"),
+  });
+}
+
+export function useUpdateAddress() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Parameters<typeof authApi.updateAddress>[1] }) =>
+      authApi.updateAddress(id, data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["shipping-addresses"] }); toast.success("Address updated"); },
+    onError: () => toast.error("Update failed"),
+  });
+}
+
+export function useDeleteAddress() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: authApi.deleteAddress,
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["shipping-addresses"] }); toast.success("Address deleted"); },
+    onError: () => toast.error("Deletion failed"),
+  });
+}

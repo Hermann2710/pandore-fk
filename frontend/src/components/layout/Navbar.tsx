@@ -203,6 +203,12 @@ function AccountMenu() {
                   {user.role === "customer" && (
                     <>
                       <MenuItem
+                        href="/profile"
+                        icon={User}
+                        label="My Profile"
+                        onClick={() => setOpen(false)}
+                      />
+                      <MenuItem
                         href="/orders"
                         icon={Package}
                         label="My Orders"

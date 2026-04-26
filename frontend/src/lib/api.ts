@@ -1,5 +1,5 @@
 import api from "./axios";
-import type { Product, Category, Tag, Order, User, HomepageSection } from "@/types";
+import type { Product, Category, Tag, Order, User, HomepageSection, ShippingAddress } from "@/types";
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export const authApi = {
@@ -17,6 +17,16 @@ export const authApi = {
     api.patch<User>(`/auth/admin/users/${userId}/`, data),
   deleteUser: (userId: number) =>
     api.delete(`/auth/admin/users/${userId}/delete/`),
+  // Self-service profile
+  updateProfile: (data: FormData) =>
+    api.patch<User>("/auth/profile/", data, { headers: { "Content-Type": "multipart/form-data" } }),
+  changePassword: (data: { current_password: string; new_password: string }) =>
+    api.post("/auth/password/", data),
+  // Shipping addresses
+  addresses: () => api.get<ShippingAddress[]>("/auth/addresses/"),
+  createAddress: (data: Partial<ShippingAddress>) => api.post<ShippingAddress>("/auth/addresses/", data),
+  updateAddress: (id: number, data: Partial<ShippingAddress>) => api.patch<ShippingAddress>(`/auth/addresses/${id}/`, data),
+  deleteAddress: (id: number) => api.delete(`/auth/addresses/${id}/`),
 };
 
 // ── Public Catalog ────────────────────────────────────────────────────────────

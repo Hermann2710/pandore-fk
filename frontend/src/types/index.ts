@@ -11,6 +11,21 @@ export interface User {
   date_joined: string;
 }
 
+export interface ShippingAddress {
+  id: number;
+  label: string;
+  full_name: string;
+  line1: string;
+  line2: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+  phone: string;
+  is_default: boolean;
+  formatted: string;
+}
+
 export interface Category {
   id: number;
   name: string;
