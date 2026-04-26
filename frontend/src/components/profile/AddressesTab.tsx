@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   useShippingAddresses, useCreateAddress,
   useUpdateAddress, useDeleteAddress,
-} from "@/hooks/useAuth";
+} from "@/hooks/useAddresses";
 import type { ShippingAddress } from "@/types";
 
 // ── Address Form ──────────────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ function AddressForm({
     city:        initial?.city        ?? "",
     state:       initial?.state       ?? "",
     postal_code: initial?.postal_code ?? "",
-    country:     initial?.country     ?? "France",
+    country:     initial?.country     ?? "Cameroon",
     phone:       initial?.phone       ?? "",
     is_default:  initial?.is_default  ?? false,
   });
@@ -60,23 +60,23 @@ function AddressForm({
         </div>
         <div className="space-y-2">
           <Label>City</Label>
-          <Input placeholder="Paris" value={form.city} onChange={set("city")} required />
+          <Input placeholder="Douala, Yaoundé, Bafoussam…" value={form.city} onChange={set("city")} required />
         </div>
         <div className="space-y-2">
-          <Label>State / Region</Label>
-          <Input placeholder="Île-de-France" value={form.state} onChange={set("state")} />
+          <Label>Region</Label>
+          <Input placeholder="Littoral, Centre, Ouest…" value={form.state} onChange={set("state")} />
         </div>
         <div className="space-y-2">
           <Label>Postal Code</Label>
-          <Input placeholder="75001" value={form.postal_code} onChange={set("postal_code")} required />
+          <Input placeholder="BP 1234" value={form.postal_code} onChange={set("postal_code")} required />
         </div>
         <div className="space-y-2">
           <Label>Country</Label>
-          <Input placeholder="France" value={form.country} onChange={set("country")} />
+          <Input placeholder="Cameroon" value={form.country} onChange={set("country")} />
         </div>
         <div className="space-y-2 col-span-2">
           <Label>Phone <span className="text-muted-foreground font-normal">(optional)</span></Label>
-          <Input placeholder="+33 6 00 00 00 00" value={form.phone} onChange={set("phone")} />
+          <Input placeholder="+237 6 00 00 00 00" value={form.phone} onChange={set("phone")} />
         </div>
         <div className="col-span-2 flex items-center gap-3">
           <button

@@ -11,7 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useCartStore } from "@/store/cart";
 import { useCheckout } from "@/hooks/useOrders";
-import { useShippingAddresses } from "@/hooks/useAuth";
+import { useShippingAddresses } from "@/hooks/useAddresses";
 import { toast } from "sonner";
 import type { ShippingAddress } from "@/types";
 

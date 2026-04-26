@@ -2,7 +2,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, Bell, RefreshCw } from "lucide-react";
-import { useAuthStore } from "@/store/auth";
+import { useAuth } from "@/context/AuthContext";
 import { useLogout } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
@@ -38,7 +38,7 @@ function Breadcrumbs() {
 }
 
 export default function DeliveryHeader() {
-  const { user } = useAuthStore();
+  const { user } = useAuth();
   const { mutate: logout } = useLogout();
   const qc = useQueryClient();
 

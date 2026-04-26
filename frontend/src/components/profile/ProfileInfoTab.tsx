@@ -7,17 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { useAuthStore } from "@/store/auth";
-import { useUpdateProfile } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
+import { useUpdateProfile } from "@/hooks/useProfile";
 
 export default function ProfileInfoTab() {
-  const { user } = useAuthStore();
+  const { user } = useAuth();
   const { mutate: update, isPending } = useUpdateProfile();
 
   const [form, setForm] = useState({
     username: user?.username ?? "",
-    email:    user?.email ?? "",
-    phone:    user?.phone ?? "",
+    email: user?.email ?? "",
+    phone: user?.phone ?? "",
   });
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -39,8 +39,9 @@ export default function ProfileInfoTab() {
     update(fd);
   };
 
-  const set = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((f) => ({ ...f, [field]: e.target.value }));
+  const set =
+    (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm((f) => ({ ...f, [field]: e.target.value }));
 
   return (
     <Card>
@@ -51,7 +52,12 @@ export default function ProfileInfoTab() {
             <div className="relative">
               <div className="h-20 w-20 rounded-2xl overflow-hidden bg-muted border">
                 {avatarPreview || user?.avatar ? (
-                  <Image src={avatarPreview ?? user!.avatar!} alt="Avatar" fill className="object-cover" />
+                  <Image
+                    src={avatarPreview ?? user!.avatar!}
+                    alt="Avatar"
+                    fill
+                    className="object-cover"
+                  />
                 ) : (
                   <div className="flex h-full items-center justify-center text-2xl font-black text-muted-foreground">
                     {user?.username?.[0]?.toUpperCase()}
@@ -60,14 +66,24 @@ export default function ProfileInfoTab() {
               </div>
               <label className="absolute -bottom-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-primary text-white shadow-md hover:bg-emerald-700 transition-colors">
                 <Camera className="h-3.5 w-3.5" />
-                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
               </label>
             </div>
             <div>
               <p className="font-semibold">{user?.username}</p>
-              <p className="text-sm text-muted-foreground capitalize">{user?.role}</p>
+              <p className="text-sm text-muted-foreground capitalize">
+                {user?.role}
+              </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Member since {user?.date_joined ? new Date(user.date_joined).toLocaleDateString() : "—"}
+                Member since{" "}
+                {user?.date_joined
+                  ? new Date(user.date_joined).toLocaleDateString()
+                  : "—"}
               </p>
             </div>
           </div>
@@ -75,15 +91,36 @@ export default function ProfileInfoTab() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
-              <Input id="username" value={form.username} onChange={set("username")} required />
+              <Input
+                id="username"
+                value={form.username}
+                onChange={set("username")}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={form.email} onChange={set("email")} required />
+              <Input
+                id="email"
+                type="email"
+                value={form.email}
+                onChange={set("email")}
+                required
+              />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="phone">Phone <span className="text-muted-foreground font-normal">(optional)</span></Label>
-              <Input id="phone" placeholder="+1 555 0100" value={form.phone} onChange={set("phone")} />
+              <Label htmlFor="phone">
+                Phone{" "}
+                <span className="text-muted-foreground font-normal">
+                  (optional)
+                </span>
+              </Label>
+              <Input
+                id="phone"
+                placeholder="+1 555 0100"
+                value={form.phone}
+                onChange={set("phone")}
+              />
             </div>
           </div>
 

@@ -5,32 +5,21 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  ShoppingCart,
-  Package,
-  LogOut,
-  LayoutDashboard,
-  Truck,
-  Search,
-  ChevronDown,
-  User,
-  MapPin,
-  Menu,
-  X,
-  Heart,
-  Bell,
-  Shield,
-  Tag,
-  FolderOpen,
+  ShoppingCart, Package, LogOut, LayoutDashboard, Truck,
+  Search, ChevronDown, User, MapPin, Menu,
+  Bell, Shield, Tag, FolderOpen,
 } from "lucide-react";
+import { useLogout } from "@/hooks/useAuth";
+import { useHydrated } from "@/hooks/useHydrated";
 import { useCartStore } from "@/store/cart";
-import { useAuthStore } from "@/store/auth";
-import { authApi, catalogApi } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
+import { catalogApi } from "@/lib/api";
 import { toast } from "sonner";
 import type { Category } from "@/types";
 
 // ── Top utility bar (above main navbar) ──────────────────────────────────────
 function TopBar() {
-  const { user } = useAuthStore();
+  const { user } = useAuth();
   return (
     <div className="bg-slate-900 text-slate-300 text-xs py-1.5 hidden md:block">
       <div className="mx-auto max-w-7xl px-4 flex items-center justify-between">
@@ -121,29 +110,19 @@ function SearchBar() {
 function AccountMenu() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, setUser } = useAuthStore();
+  const { user, setUser } = useAuth();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node))
-        setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const { mutate: logout } = useMutation({
-    mutationFn: authApi.logout,
-    onSuccess: () => {
-      setUser(null);
-      queryClient.clear();
-      router.push("/login");
-      toast.success("Logged out successfully");
-    },
-  });
+  const { mutate: logout } = useLogout();
 
   return (
     <div ref={ref} className="relative">
@@ -284,19 +263,17 @@ function MenuItem({
 
 // ── Cart icon ─────────────────────────────────────────────────────────────────
 function CartIcon() {
+  const hydrated = useHydrated();
   const totalItems = useCartStore((s) => s.totalItems);
-  const { user } = useAuthStore();
+  const { user } = useAuth();
   if (user?.role !== "customer") return null;
 
   return (
-    <Link
-      href="/cart"
-      className="flex items-end gap-1 text-white hover:text-emerald-300 transition-colors group"
-    >
+    <Link href="/cart" className="flex items-end gap-1 text-white hover:text-emerald-300 transition-colors group">
       <div className="relative">
         <ShoppingCart className="h-7 w-7" />
         <AnimatePresence>
-          {totalItems() > 0 && (
+          {hydrated && totalItems() > 0 && (
             <motion.span
               key={totalItems()}
               initial={{ scale: 0 }}

@@ -42,7 +42,7 @@ class ShippingAddress(models.Model):
     city        = models.CharField(max_length=100)
     state       = models.CharField(max_length=100, blank=True)
     postal_code = models.CharField(max_length=20)
-    country     = models.CharField(max_length=100, default="France")
+    country     = models.CharField(max_length=100, default="Cameroon")
     phone       = models.CharField(max_length=20, blank=True)
     is_default  = models.BooleanField(default=False)
 

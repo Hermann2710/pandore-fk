@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, MapPin, Lock, Camera } from "lucide-react";
-import { useAuthStore } from "@/store/auth";
+import { useAuth } from "@/context/AuthContext";
 import ProfileInfoTab from "@/components/profile/ProfileInfoTab";
 import AddressesTab from "@/components/profile/AddressesTab";
 import ChangePasswordTab from "@/components/profile/ChangePasswordTab";
@@ -16,7 +16,7 @@ const TABS = [
 type TabId = (typeof TABS)[number]["id"];
 
 export default function ProfilePage() {
-  const { user } = useAuthStore();
+  const { user } = useAuth();
   const [tab, setTab] = useState<TabId>("info");
 
   return (
