@@ -1,0 +1,27 @@
+@startuml state_newsletter
+skinparam stateBorderColor #64748b
+skinparam stateBackgroundColor #f8fafc
+skinparam arrowColor #10b981
+
+[*] --> Draft : Admin creates newsletter
+
+Draft --> Sent : Admin clicks "Send"\n(POST .../send/)
+
+Draft --> Draft : Admin edits content\n(PATCH .../newsletters/{id}/)
+
+Sent --> [*]
+
+state "Draft" as Draft {
+  Draft : status = "draft"
+  Draft : sent_at = null
+  Draft : Editable
+}
+
+state "Sent" as Sent {
+  Sent : status = "sent"
+  Sent : sent_at = now()
+  Sent : Read-only
+  Sent : Delivered to N active subscribers
+}
+
+@enduml

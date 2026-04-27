@@ -1,0 +1,79 @@
+@startuml activity_checkout
+skinparam activityBackgroundColor #f8fafc
+skinparam activityBorderColor #64748b
+skinparam arrowColor #10b981
+
+start
+
+:Customer views cart;
+
+if (Cart empty?) then (yes)
+  :Show empty cart message;
+  stop
+else (no)
+  :Click "Proceed to Checkout";
+endif
+
+:Load saved addresses\n& payment methods;
+
+partition "Step 1 — Shipping Address" {
+  if (Has saved addresses?) then (yes)
+    :Show address selector;
+    if (Select saved address?) then (yes)
+      :Use selected address;
+    else (no)
+      :Enter manual address;
+    endif
+  else (no)
+    :Enter manual address;
+  endif
+
+  if (Address provided?) then (no)
+    :Show error "Please enter address";
+    stop
+  else (yes)
+    :Continue to payment step;
+  endif
+}
+
+partition "Step 2 — Payment Method" {
+  :Show available payment methods;
+  :Customer selects method;
+
+  if (Method selected?) then (no)
+    :Show error "Please select method";
+    stop
+  else (yes)
+    :Click "Place Order";
+  endif
+}
+
+partition "Order Creation" {
+  :POST /api/orders/checkout/;
+
+  if (Stock available?) then (no)
+    :Show stock error;
+    stop
+  else (yes)
+    :Create Order;
+    :Create OrderItems;
+    :Decrement stock;
+    :Create Payment (pending);
+  endif
+}
+
+partition "Payment Simulation" {
+  :Show "Processing Payment…" screen;
+  :Wait 2 seconds;
+  :POST /api/payments/{orderId}/confirm/;
+  :Generate SIM-XXXX reference;
+  :Update Payment → confirmed;
+  :Clear cart;
+  :Show confirmation screen;
+}
+
+:Customer redirected to /orders;
+
+stop
+
+@enduml

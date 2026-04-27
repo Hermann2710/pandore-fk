@@ -111,6 +111,8 @@ export const ordersApi = {
   ) => api.post<Order>(`/orders/admin/${orderId}/assign/`, data),
   // Delivery
   deliveryQueue: () => api.get<Order[]>("/orders/delivery/queue/"),
+  cancelOrder: (orderId: number) =>
+    api.patch<Order>(`/orders/${orderId}/cancel/`),
   updateStatus: (orderId: number) =>
     api.patch<Order>(`/orders/delivery/${orderId}/status/`),
 };

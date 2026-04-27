@@ -2,9 +2,11 @@
 import { motion } from "framer-motion";
 import type { Order } from "@/types";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, MapPin, Clock } from "lucide-react";
+import { Package, MapPin, Clock, XCircle } from "lucide-react";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
+import { useCancelOrder } from "@/hooks/useOrders";
 
 // Maps order status to a human-readable label and badge variant
 const STATUS_CONFIG: Record<
@@ -27,6 +29,7 @@ interface Props {
 export default function OrderCard({ order, index = 0 }: Props) {
   const config = STATUS_CONFIG[order.status];
   const { currency } = useCurrencyStore();
+  const { mutate: cancel, isPending: cancelling } = useCancelOrder();
 
   return (
     <motion.div
@@ -72,6 +75,21 @@ export default function OrderCard({ order, index = 0 }: Props) {
             <span className="text-sm font-semibold">Total</span>
             <span className="text-primary font-bold">{formatPrice(order.total_price, currency)}</span>
           </div>
+
+          {order.status === "pending" && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full text-destructive border-destructive/30 hover:bg-destructive/5 gap-1.5"
+              disabled={cancelling}
+              onClick={() => {
+                if (confirm(`Cancel order #${order.id}?`)) cancel(order.id);
+              }}
+            >
+              <XCircle className="h-4 w-4" />
+              {cancelling ? "Cancelling…" : "Cancel Order"}
+            </Button>
+          )}
         </CardContent>
       </Card>
     </motion.div>

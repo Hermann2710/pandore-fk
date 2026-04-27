@@ -1,0 +1,41 @@
+@startuml sequence_auth
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+
+actor User
+participant "Next.js\nFrontend" as FE
+participant "Axios\nInterceptor" as AX
+participant "Django\nBackend" as BE
+database "Database" as DB
+
+== Login ==
+
+User -> FE : Submit login form\n{username, password}
+FE -> BE : POST /api/auth/login/
+BE -> DB : SELECT user WHERE username=?
+DB --> BE : user
+BE -> BE : check_password()
+BE --> FE : UserData + Set-Cookie\n(pandore_access, pandore_refresh)
+FE -> FE : setUser(data)\nAuthContext updated
+FE --> User : Redirect to homepage
+
+== Silent Token Refresh ==
+
+FE -> BE : GET /api/catalog/products/\n(with expired access cookie)
+BE --> FE : 401 Unauthorized
+
+AX -> BE : POST /api/auth/refresh/\n(sends refresh cookie)
+BE -> BE : Validate refresh token
+BE --> AX : 200 + new Set-Cookie\n(new pandore_access)
+AX -> BE : Retry original request
+BE --> FE : 200 products[]
+
+== Logout ==
+
+User -> FE : Click "Sign Out"
+FE -> BE : POST /api/auth/logout/
+BE --> FE : 200 + delete cookies
+FE -> FE : setUser(null)
+FE --> User : Redirect to homepage
+
+@enduml

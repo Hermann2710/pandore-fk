@@ -1,0 +1,152 @@
+@startuml usecase_diagram
+skinparam actorStyle awesome
+left to right direction
+
+actor "Customer" as C
+actor "Admin" as A
+actor "Delivery Man" as D
+
+rectangle "PANDORE" {
+
+  package "Authentication" {
+    usecase "Register" as UC1
+    usecase "Login" as UC2
+    usecase "Logout" as UC3
+    usecase "Refresh Token" as UC4
+  }
+
+  package "Catalog" {
+    usecase "Browse Catalog" as UC5
+    usecase "Search Products" as UC6
+    usecase "Filter by Category/Tag" as UC7
+    usecase "View Product Detail" as UC8
+    usecase "View Recently Viewed" as UC9
+  }
+
+  package "Cart & Checkout" {
+    usecase "Add to Cart" as UC10
+    usecase "Update Cart" as UC11
+    usecase "Checkout" as UC12
+    usecase "Select Shipping Address" as UC13
+    usecase "Select Payment Method" as UC14
+    usecase "Confirm Payment (Simulated)" as UC15
+  }
+
+  package "Orders" {
+    usecase "View My Orders" as UC16
+    usecase "Track Order Status" as UC17
+  }
+
+  package "Wishlist" {
+    usecase "Add/Remove from Wishlist" as UC18
+    usecase "View Wishlist" as UC19
+  }
+
+  package "Profile" {
+    usecase "Update Profile" as UC20
+    usecase "Upload/Delete Avatar" as UC21
+    usecase "Manage Addresses" as UC22
+    usecase "Change Password" as UC23
+    usecase "Manage Newsletter Subscription" as UC24
+  }
+
+  package "Newsletter" {
+    usecase "Subscribe via Footer" as UC25
+    usecase "Unsubscribe" as UC26
+  }
+
+  package "Currency" {
+    usecase "Select Display Currency" as UC27
+  }
+
+  package "Admin — Catalog" {
+    usecase "Manage Products" as UC28
+    usecase "Manage Categories" as UC29
+    usecase "Manage Tags" as UC30
+    usecase "Manage Homepage Sections" as UC31
+  }
+
+  package "Admin — Orders" {
+    usecase "View All Orders" as UC32
+    usecase "Assign Order to Delivery Man" as UC33
+  }
+
+  package "Admin — Payments" {
+    usecase "Manage Payment Methods" as UC34
+    usecase "View Payment History" as UC35
+  }
+
+  package "Admin — Newsletter" {
+    usecase "Create/Edit Newsletter" as UC36
+    usecase "Send Newsletter" as UC37
+    usecase "View Subscribers" as UC38
+  }
+
+  package "Admin — Settings" {
+    usecase "Manage Currencies" as UC39
+    usecase "Manage Site Settings" as UC40
+    usecase "Manage Social Links" as UC41
+    usecase "Manage Users & Roles" as UC42
+  }
+
+  package "Delivery" {
+    usecase "View Assigned Orders" as UC43
+    usecase "Update Order Status" as UC44
+  }
+}
+
+' Customer
+C --> UC1
+C --> UC2
+C --> UC3
+C --> UC5
+C --> UC6
+C --> UC7
+C --> UC8
+C --> UC9
+C --> UC10
+C --> UC11
+C --> UC12
+C --> UC16
+C --> UC17
+C --> UC18
+C --> UC19
+C --> UC20
+C --> UC21
+C --> UC22
+C --> UC23
+C --> UC24
+C --> UC25
+C --> UC26
+C --> UC27
+
+UC12 ..> UC13 : <<include>>
+UC12 ..> UC14 : <<include>>
+UC12 ..> UC15 : <<include>>
+
+' Admin
+A --> UC2
+A --> UC3
+A --> UC28
+A --> UC29
+A --> UC30
+A --> UC31
+A --> UC32
+A --> UC33
+A --> UC34
+A --> UC35
+A --> UC36
+A --> UC37
+A --> UC38
+A --> UC39
+A --> UC40
+A --> UC41
+A --> UC42
+
+' Delivery
+D --> UC2
+D --> UC3
+D --> UC43
+D --> UC44
+
+@enduml

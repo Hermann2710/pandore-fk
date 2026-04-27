@@ -66,6 +66,27 @@ class CheckoutView(APIView):
         return Response(OrderSerializer(order, context={"request": request}).data, status=201)
 
 
+class CustomerCancelOrderView(APIView):
+    """Customer cancels their own pending order and restores stock."""
+
+    @transaction.atomic
+    def patch(self, request, order_id):
+        order = get_object_or_404(Order, pk=order_id, customer=request.user)
+        if order.status != Order.Status.PENDING:
+            return Response(
+                {"detail": "Only pending orders can be cancelled."},
+                status=400
+            )
+        # Restore stock
+        for item in order.items.select_related("product"):
+            if item.product:
+                item.product.stock += item.quantity
+                item.product.save()
+        order.status = Order.Status.CANCELLED
+        order.save()
+        return Response(OrderSerializer(order, context={"request": request}).data)
+
+
 # ── Admin ─────────────────────────────────────────────────────────────────────
 
 class AdminOrderListView(APIView):

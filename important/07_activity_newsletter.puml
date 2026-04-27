@@ -1,0 +1,59 @@
+@startuml activity_newsletter
+skinparam activityBackgroundColor #f8fafc
+skinparam activityBorderColor #64748b
+skinparam arrowColor #10b981
+
+start
+
+partition "Subscription (Customer)" {
+  :Customer enters email in footer\nor profile page;
+  :POST /api/newsletter/subscribe/;
+
+  if (Email already exists?) then (yes)
+    if (Already active?) then (yes)
+      :Return "Already subscribed" error;
+      stop
+    else (no)
+      :Reactivate subscription;
+    endif
+  else (no)
+    :Create new Subscriber (active=true);
+  endif
+
+  :Show success toast;
+}
+
+partition "Newsletter Creation (Admin)" {
+  :Admin opens Newsletter tab;
+  :Click "New Newsletter";
+  :Write subject + content\n(Markdown editor);
+  :Click "Save Draft";
+  :POST /api/newsletter/admin/newsletters/;
+  :Newsletter saved as draft;
+}
+
+partition "Newsletter Send (Admin)" {
+  :Admin clicks "Send (N)"\non a draft newsletter;
+  :POST /api/newsletter/admin/newsletters/{id}/send/;
+  :Count active subscribers;
+  :Mark newsletter as sent;
+  :Return {sent_to: N};
+  :Show success toast "Sent to N subscribers";
+  note right: No real email sent in dev
+}
+
+partition "Unsubscription (Customer)" {
+  :Customer clicks "Unsubscribe"\nin profile or footer link;
+  :POST /api/newsletter/unsubscribe/;
+  if (Email found?) then (no)
+    :Return 404 error;
+    stop
+  else (yes)
+    :Set subscriber.is_active = false;
+    :Show success toast;
+  endif
+}
+
+stop
+
+@enduml

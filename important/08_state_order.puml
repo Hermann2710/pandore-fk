@@ -1,0 +1,49 @@
+@startuml state_order
+skinparam stateBorderColor #64748b
+skinparam stateBackgroundColor #f8fafc
+skinparam arrowColor #10b981
+
+[*] --> Pending : Customer places order\n(POST /api/orders/checkout/)
+
+Pending --> Assigned : Admin assigns delivery man\n(POST /api/orders/admin/{id}/assign/)
+
+Pending --> Cancelled : Admin cancels order
+
+Assigned --> PickedUp : Delivery man picks up\n(PATCH /api/orders/delivery/{id}/status/)
+
+PickedUp --> InTransit : Delivery man in transit\n(PATCH /api/orders/delivery/{id}/status/)
+
+InTransit --> Delivered : Delivery man delivers\n(PATCH /api/orders/delivery/{id}/status/)
+
+Delivered --> [*]
+Cancelled --> [*]
+
+state "Pending" as Pending {
+  Pending : Payment created (pending)
+  Pending : Stock decremented
+  Pending : Awaiting admin action
+}
+
+state "Assigned" as Assigned {
+  Assigned : DeliveryAssignment created
+  Assigned : Delivery man notified
+}
+
+state "PickedUp" as PickedUp {
+  PickedUp : Package collected
+}
+
+state "InTransit" as InTransit {
+  InTransit : En route to customer
+}
+
+state "Delivered" as Delivered {
+  Delivered : Customer received package
+  Delivered : Payment confirmed
+}
+
+state "Cancelled" as Cancelled {
+  Cancelled : Order voided
+}
+
+@enduml

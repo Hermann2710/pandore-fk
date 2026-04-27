@@ -1,0 +1,212 @@
+@startuml class_diagram
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+package "users" {
+  class User {
+    +id: int
+    +username: string
+    +email: string
+    +role: enum {admin, delivery, customer}
+    +phone: string
+    +avatar: ImageField
+    +is_admin_role: bool
+    +is_delivery: bool
+  }
+
+  class ShippingAddress {
+    +id: int
+    +label: string
+    +full_name: string
+    +line1: string
+    +line2: string
+    +city: string
+    +state: string
+    +postal_code: string
+    +country: string
+    +phone: string
+    +is_default: bool
+    +as_string(): string
+  }
+
+  class Wishlist {
+    +id: int
+    +updated_at: datetime
+  }
+}
+
+package "catalog" {
+  class Category {
+    +id: int
+    +name: string
+    +slug: string
+    +description: string
+  }
+
+  class Tag {
+    +id: int
+    +name: string
+    +slug: string
+  }
+
+  class AttributeKey {
+    +id: int
+    +name: string
+  }
+
+  class Product {
+    +id: int
+    +name: string
+    +slug: string
+    +description: string
+    +price: decimal
+    +stock: int
+    +image: ImageField
+    +is_active: bool
+    +created_at: datetime
+  }
+
+  class ProductAttribute {
+    +id: int
+    +value: string
+  }
+
+  class HomepageSection {
+    +id: int
+    +title: string
+    +subtitle: string
+    +type: enum {hero_carousel, product_row, category_banner, promo_banner}
+    +order: int
+    +is_active: bool
+    +cta_label: string
+    +cta_url: string
+    +bg_color: string
+    +bg_image: ImageField
+  }
+}
+
+package "orders" {
+  class Order {
+    +id: int
+    +status: enum {pending, assigned, picked_up, in_transit, delivered, cancelled}
+    +shipping_address: string
+    +total_price: decimal
+    +created_at: datetime
+    +updated_at: datetime
+  }
+
+  class OrderItem {
+    +id: int
+    +quantity: int
+    +unit_price: decimal
+    +get_subtotal(): decimal
+  }
+
+  class DeliveryAssignment {
+    +id: int
+    +assigned_at: datetime
+    +notes: string
+  }
+}
+
+package "payments" {
+  class PaymentMethod {
+    +id: int
+    +name: string
+    +instructions: string
+    +logo: ImageField
+    +is_active: bool
+    +order: int
+  }
+
+  class Payment {
+    +id: int
+    +status: enum {pending, confirmed, failed}
+    +transaction_ref: string
+    +created_at: datetime
+    +updated_at: datetime
+  }
+}
+
+package "newsletter" {
+  class Subscriber {
+    +id: int
+    +email: string
+    +is_active: bool
+    +subscribed_at: datetime
+  }
+
+  class Newsletter {
+    +id: int
+    +subject: string
+    +content: string
+    +status: enum {draft, sent}
+    +sent_at: datetime
+    +created_at: datetime
+    +updated_at: datetime
+  }
+}
+
+package "currencies" {
+  class Currency {
+    +id: int
+    +code: string
+    +name: string
+    +symbol: string
+    +rate: decimal
+    +is_active: bool
+    +is_default: bool
+  }
+}
+
+package "site_config" {
+  class SiteSettings {
+    +id: int
+    +site_name: string
+    +tagline: string
+    +description: string
+    +logo: ImageField
+    +email: string
+    +phone: string
+    +address: string
+    +city: string
+    +country: string
+    +shipping_price: decimal
+    +free_shipping_threshold: decimal
+    +get(): SiteSettings
+  }
+
+  class SocialLink {
+    +id: int
+    +platform: string
+    +url: string
+    +icon: string
+    +order: int
+    +is_active: bool
+  }
+}
+
+' Relations
+User "1" -- "0..*" ShippingAddress : has
+User "1" -- "1" Wishlist : owns
+Wishlist "1" -- "0..*" Product : contains
+
+Product "0..*" -- "0..1" Category : belongs to
+Product "0..*" -- "0..*" Tag : tagged with
+Product "1" -- "0..*" ProductAttribute : has
+ProductAttribute "0..*" -- "1" AttributeKey : uses
+HomepageSection "0..*" -- "0..*" Product : features
+HomepageSection "0..*" -- "0..1" Category : linked to
+
+Order "0..*" -- "1" User : placed by
+Order "1" -- "1..*" OrderItem : contains
+OrderItem "0..*" -- "1" Product : references
+Order "1" -- "0..1" DeliveryAssignment : assigned via
+DeliveryAssignment "0..*" -- "1" User : assigned to
+
+Order "1" -- "1" Payment : paid via
+Payment "0..*" -- "1" PaymentMethod : uses
+
+SiteSettings "1" -- "0..*" SocialLink : has
+
+@enduml

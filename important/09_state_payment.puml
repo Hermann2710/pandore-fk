@@ -1,0 +1,30 @@
+@startuml state_payment
+skinparam stateBorderColor #64748b
+skinparam stateBackgroundColor #f8fafc
+skinparam arrowColor #10b981
+
+[*] --> Pending : Payment created\nat checkout
+
+Pending --> Confirmed : Simulation confirms\n(POST /api/payments/{orderId}/confirm/)\nGenerates SIM-XXXX ref
+
+Pending --> Failed : Simulation fails\n(error during confirm)
+
+Confirmed --> [*]
+Failed --> [*]
+
+state "Pending" as Pending {
+  Pending : transaction_ref = ""
+  Pending : Awaiting confirmation
+}
+
+state "Confirmed" as Confirmed {
+  Confirmed : transaction_ref = SIM-XXXX
+  Confirmed : Payment complete
+}
+
+state "Failed" as Failed {
+  Failed : transaction_ref = ""
+  Failed : Order remains pending
+}
+
+@enduml

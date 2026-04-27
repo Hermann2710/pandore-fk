@@ -44,6 +44,18 @@ export function useAssignOrder() {
   });
 }
 
+export function useCancelOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ordersApi.cancelOrder,
+    onSuccess: ({ data }) => {
+      qc.invalidateQueries({ queryKey: ["my-orders"] });
+      toast.success(`Order #${data.id} cancelled`);
+    },
+    onError: (err: any) => toast.error(err?.response?.data?.detail ?? "Cannot cancel this order"),
+  });
+}
+
 export function useDeliveryQueue() {
   return useQuery({
     queryKey: ["delivery-queue"],
