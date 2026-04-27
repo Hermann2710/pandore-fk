@@ -121,6 +121,30 @@ export interface Payment {
   updated_at: string;
 }
 
+export interface SocialLink {
+  id: number;
+  platform: string;
+  url: string;
+  icon: string;
+  order: number;
+  is_active: boolean;
+}
+
+export interface SiteSettings {
+  site_name: string;
+  tagline: string;
+  description: string;
+  logo: string | null;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  country: string;
+  shipping_price: string;
+  free_shipping_threshold: string;
+  social_links: SocialLink[];
+}
+
 export interface Currency {
   id: number;
   code: string;

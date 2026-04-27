@@ -1,5 +1,5 @@
 import api from "./axios";
-import type { Product, Category, Tag, Order, User, HomepageSection, ShippingAddress, Wishlist, PaymentMethod, Payment, Subscriber, Newsletter, Currency } from "@/types";
+import type { Product, Category, Tag, Order, User, HomepageSection, ShippingAddress, Wishlist, PaymentMethod, Payment, Subscriber, Newsletter, Currency, SiteSettings, SocialLink } from "@/types";
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export const authApi = {
@@ -20,6 +20,7 @@ export const authApi = {
   // Self-service profile
   updateProfile: (data: FormData) =>
     api.patch<User>("/users/profile/", data, { headers: { "Content-Type": "multipart/form-data" } }),
+  deleteAvatar: () => api.delete("/users/profile/avatar/"),
   changePassword: (data: { current_password: string; new_password: string }) =>
     api.post("/users/password/", data),
   // Shipping addresses
@@ -143,6 +144,20 @@ export const newsletterApi = {
   deleteNewsletter: (id: number) => api.delete(`/newsletter/admin/newsletters/${id}/`),
   sendNewsletter: (id: number) =>
     api.post<{ detail: string; sent_to: number }>(`/newsletter/admin/newsletters/${id}/send/`),
+};
+
+// ── Site Config ───────────────────────────────────────────────────────────────
+export const siteConfigApi = {
+  get: () => api.get<SiteSettings>("/site-config/"),
+  adminGet: () => api.get<SiteSettings>("/site-config/admin/"),
+  update: (data: FormData) =>
+    api.patch<SiteSettings>("/site-config/admin/", data, { headers: { "Content-Type": "multipart/form-data" } }),
+  deleteLogo: () => api.delete("/site-config/admin/logo/"),
+  // Social links
+  socialLinks: () => api.get<SocialLink[]>("/site-config/admin/social/"),
+  createSocialLink: (data: Partial<SocialLink>) => api.post<SocialLink>("/site-config/admin/social/", data),
+  updateSocialLink: (id: number, data: Partial<SocialLink>) => api.patch<SocialLink>(`/site-config/admin/social/${id}/`, data),
+  deleteSocialLink: (id: number) => api.delete(`/site-config/admin/social/${id}/`),
 };
 
 // ── Currencies ────────────────────────────────────────────────────────────────

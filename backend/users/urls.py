@@ -1,12 +1,13 @@
 from django.urls import path
 from .views import (
-    UpdateProfileView, ChangePasswordView,
+    UpdateProfileView, DeleteAvatarView, ChangePasswordView,
     DeliveryPersonnelListView,
     AdminUserListView, AdminUserRoleUpdateView, AdminUserDeleteView,
 )
 
 urlpatterns = [
     path("profile/",                          UpdateProfileView.as_view()),
+    path("profile/avatar/",                   DeleteAvatarView.as_view()),
     path("password/",                         ChangePasswordView.as_view()),
     path("delivery-personnel/",               DeliveryPersonnelListView.as_view()),
     path("admin/users/",                      AdminUserListView.as_view()),

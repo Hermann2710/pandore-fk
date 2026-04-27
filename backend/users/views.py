@@ -14,6 +14,16 @@ class UpdateProfileView(APIView):
         return Response(UserSerializer(request.user).data)
 
 
+class DeleteAvatarView(APIView):
+    def delete(self, request):
+        user = request.user
+        if user.avatar:
+            user.avatar.delete(save=False)
+            user.avatar = None
+            user.save()
+        return Response({"detail": "Avatar removed."})
+
+
 class ChangePasswordView(APIView):
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data)

@@ -2,17 +2,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Camera } from "lucide-react";
+import { Camera, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
-import { useUpdateProfile } from "@/hooks/useProfile";
+import { useUpdateProfile, useDeleteAvatar } from "@/hooks/useProfile";
 
 export default function ProfileInfoTab() {
   const { user } = useAuth();
   const { mutate: update, isPending } = useUpdateProfile();
+  const { mutate: deleteAvatar, isPending: deletingAvatar } = useDeleteAvatar();
 
   const [form, setForm] = useState({
     username: user?.username ?? "",
@@ -69,25 +70,22 @@ export default function ProfileInfoTab() {
               </div>
               <label className="absolute -bottom-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-primary text-white shadow-md hover:bg-emerald-700 transition-colors">
                 <Camera className="h-3.5 w-3.5" />
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarChange}
-                />
+                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
               </label>
             </div>
             <div>
               <p className="font-semibold">{user?.username}</p>
-              <p className="text-sm text-muted-foreground capitalize">
-                {user?.role}
-              </p>
+              <p className="text-sm text-muted-foreground capitalize">{user?.role}</p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Member since{" "}
-                {user?.date_joined
-                  ? new Date(user.date_joined).toLocaleDateString()
-                  : "—"}
+                Member since {user?.date_joined ? new Date(user.date_joined).toLocaleDateString() : "—"}
               </p>
+              {(avatarUrl && !avatarPreview) && (
+                <button type="button" onClick={() => deleteAvatar()}
+                  disabled={deletingAvatar}
+                  className="mt-1.5 flex items-center gap-1 text-xs text-destructive hover:underline disabled:opacity-50">
+                  <Trash2 className="h-3 w-3" /> Remove avatar
+                </button>
+              )}
             </div>
           </div>
 

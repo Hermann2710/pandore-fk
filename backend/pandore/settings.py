@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "payments",
     "newsletter",
     "currencies",
+    "site_config",
     "catalog",
     "orders",
 ]

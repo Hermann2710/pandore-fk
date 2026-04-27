@@ -21,6 +21,7 @@ import {
   FolderOpen,
   ClipboardList,
 } from "lucide-react";
+import Image from "next/image";
 import { useLogout } from "@/hooks/useAuth";
 import { useHydrated } from "@/hooks/useHydrated";
 import { useCartStore } from "@/store/cart";
@@ -28,7 +29,8 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { useAuth } from "@/context/AuthContext";
 import { catalogApi } from "@/lib/api";
 import { useCurrencies } from "@/hooks/useCurrencies";
-import { useCurrencyStore } from "@/store/currency";
+import { useCurrencyStore, formatPrice } from "@/store/currency";
+import { useSiteConfig } from "@/hooks/useSiteConfig";
 import type { Category } from "@/types";
 
 // ── Top utility bar ───────────────────────────────────────────────────────────
@@ -36,6 +38,12 @@ function TopBar() {
   const { user } = useAuth();
   const { data: currencies = [] } = useCurrencies();
   const { currency, setCurrency } = useCurrencyStore();
+  const { data: config } = useSiteConfig();
+
+  const location = [config?.city, config?.country].filter(Boolean).join(", ") || "Cameroon";
+  const threshold = config?.free_shipping_threshold
+    ? formatPrice(config.free_shipping_threshold, currency)
+    : null;
 
   return (
     <div className="bg-slate-900 text-slate-300 text-xs py-1.5 hidden md:block">
@@ -43,9 +51,8 @@ function TopBar() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <MapPin className="h-3 w-3 text-emerald-400" />
-            <span>Deliver to <span className="text-white font-medium">Cameroon</span></span>
+            <span>Deliver to <span className="text-white font-medium">{location}</span></span>
           </div>
-          {/* Currency selector */}
           {currencies.length > 0 && (
             <select
               value={currency.code}
@@ -63,33 +70,20 @@ function TopBar() {
         </div>
         <div className="flex items-center gap-5">
           {user?.role === "admin" && (
-            <Link
-              href="/admin"
-              className="hover:text-white transition-colors flex items-center gap-1"
-            >
+            <Link href="/admin" className="hover:text-white transition-colors flex items-center gap-1">
               <Shield className="h-3 w-3 text-emerald-400" /> Admin Panel
             </Link>
           )}
           {user?.role === "delivery" && (
-            <Link
-              href="/delivery"
-              className="hover:text-white transition-colors flex items-center gap-1"
-            >
+            <Link href="/delivery" className="hover:text-white transition-colors flex items-center gap-1">
               <Truck className="h-3 w-3 text-emerald-400" /> My Deliveries
             </Link>
           )}
-          <Link href="/catalog" className="hover:text-white transition-colors">
-            New Arrivals
-          </Link>
-          <Link
-            href="/catalog?ordering=price"
-            className="hover:text-white transition-colors"
-          >
-            Best Sellers
-          </Link>
-          <span className="text-emerald-400 font-medium">
-            Free shipping over 50 000 FCFA
-          </span>
+          <Link href="/catalog" className="hover:text-white transition-colors">New Arrivals</Link>
+          <Link href="/catalog?ordering=price" className="hover:text-white transition-colors">Best Sellers</Link>
+          {threshold && (
+            <span className="text-emerald-400 font-medium">Free shipping over {threshold}</span>
+          )}
         </div>
       </div>
     </div>
@@ -529,6 +523,13 @@ function CategoryStrip() {
 
 // ── Main Navbar ───────────────────────────────────────────────────────────────
 export default function Navbar() {
+  const { data: config } = useSiteConfig();
+  const siteName = config?.site_name ?? "PANDORE";
+  const tagline = config?.tagline ?? "Luxury Store";
+  const logoUrl = config?.logo
+    ? config.logo.startsWith("http") ? config.logo : `http://localhost:8000${config.logo}`
+    : null;
+
   return (
     <motion.div
       initial={{ y: -20, opacity: 0 }}
@@ -541,19 +542,21 @@ export default function Navbar() {
         <div className="mx-auto max-w-7xl px-4 flex items-center gap-4 sm:gap-6">
           <Link href="/" className="flex items-center gap-2 shrink-0 group">
             <motion.div
-              whileHover={{ rotate: 15, scale: 1.1 }}
+              whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300 }}
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 shadow-lg shadow-emerald-500/30"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 shadow-lg shadow-emerald-500/30 overflow-hidden"
             >
-              <Package className="h-5 w-5 text-white" />
+              {logoUrl
+                ? <Image src={logoUrl} alt={siteName} width={36} height={36} className="object-contain" />
+                : <Package className="h-5 w-5 text-white" />}
             </motion.div>
             <div className="hidden sm:block">
               <span className="text-xl font-black tracking-tight text-white">
-                PAN<span className="text-emerald-400">DORE</span>
+                {siteName.length > 3
+                  ? <>{siteName.slice(0, -3)}<span className="text-emerald-400">{siteName.slice(-3)}</span></>
+                  : <span className="text-emerald-400">{siteName}</span>}
               </span>
-              <p className="text-[9px] text-slate-400 -mt-1 tracking-widest uppercase">
-                Luxury Store
-              </p>
+              <p className="text-[9px] text-slate-400 -mt-1 tracking-widest uppercase">{tagline}</p>
             </div>
           </Link>
 

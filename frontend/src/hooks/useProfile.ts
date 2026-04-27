@@ -22,6 +22,18 @@ export function useUpdateProfile() {
   });
 }
 
+export function useDeleteAvatar() {
+  const { refetch } = useAuth();
+  return useMutation({
+    mutationFn: authApi.deleteAvatar,
+    onSuccess: () => {
+      refetch();
+      toast.success("Avatar removed");
+    },
+    onError: () => toast.error("Failed to remove avatar"),
+  });
+}
+
 export function useChangePassword() {
   return useMutation({
     mutationFn: authApi.changePassword,
