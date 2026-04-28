@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Pencil, Trash2, Tag as TagIcon } from "lucide-react";
@@ -12,28 +13,30 @@ import { useAdminTags, useCreateTag, useUpdateTag, useDeleteTag } from "@/hooks/
 import type { Tag } from "@/types";
 
 function TagForm({ initial, onSubmit, isPending }: { initial?: Tag; onSubmit: (d: { name: string; slug: string }) => void; isPending: boolean }) {
+  const t = useTranslations("adminTabs.tags");
   const [name, setName] = useState(initial?.name ?? "");
   const [slug, setSlug] = useState(initial?.slug ?? "");
   const handleNameChange = (v: string) => { setName(v); if (!initial) setSlug(v.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")); };
   return (
     <div className="space-y-4 pt-2">
-      <div className="space-y-2"><Label>Name</Label><Input value={name} onChange={(e) => handleNameChange(e.target.value)} placeholder="e.g. Bestseller" /></div>
-      <div className="space-y-2"><Label>Slug</Label><Input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="e.g. bestseller" /></div>
+      <div className="space-y-2"><Label>{t("labelName")}</Label><Input value={name} onChange={(e) => handleNameChange(e.target.value)} placeholder={t("namePlaceholder")} /></div>
+      <div className="space-y-2"><Label>{t("labelSlug")}</Label><Input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder={t("slugPlaceholder")} /></div>
       <Button variant="luxury" className="w-full" onClick={() => onSubmit({ name, slug })} disabled={!name || !slug || isPending}>
-        {isPending ? "Saving…" : initial ? "Save Changes" : "Create Tag"}
+        {isPending ? t("saving") : initial ? t("saveChanges") : t("createTag")}
       </Button>
     </div>
   );
 }
 
 function EditDialog({ tag }: { tag: Tag }) {
+  const t = useTranslations("adminTabs.tags");
   const [open, setOpen] = useState(false);
   const { mutate, isPending } = useUpdateTag();
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild><Button size="icon" variant="ghost" className="h-8 w-8"><Pencil className="h-3.5 w-3.5" /></Button></DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>Edit Tag</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{t("editTag")}</DialogTitle></DialogHeader>
         <TagForm initial={tag} onSubmit={(data) => mutate({ id: tag.id, data }, { onSuccess: () => setOpen(false) })} isPending={isPending} />
       </DialogContent>
     </Dialog>
@@ -41,6 +44,7 @@ function EditDialog({ tag }: { tag: Tag }) {
 }
 
 export default function TagsTab() {
+  const t = useTranslations("adminTabs.tags");
   const [createOpen, setCreateOpen] = useState(false);
   const { data: tags, isLoading } = useAdminTags();
   const { mutate: create, isPending: creating } = useCreateTag();
@@ -49,11 +53,11 @@ export default function TagsTab() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex flex-wrap gap-2">{tags?.map((t) => <Badge key={t.id} variant="emerald"><TagIcon className="h-3 w-3 mr-1" />{t.name}</Badge>)}</div>
+        <div className="flex flex-wrap gap-2">{tags?.map((tg) => <Badge key={tg.id} variant="emerald"><TagIcon className="h-3 w-3 mr-1" />{tg.name}</Badge>)}</div>
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-          <DialogTrigger asChild><Button variant="luxury" size="sm" className="gap-1.5 shrink-0"><Plus className="h-4 w-4" /> New Tag</Button></DialogTrigger>
+          <DialogTrigger asChild><Button variant="luxury" size="sm" className="gap-1.5 shrink-0"><Plus className="h-4 w-4" /> {t("newTag")}</Button></DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>New Tag</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{t("newTag")}</DialogTitle></DialogHeader>
             <TagForm onSubmit={(data) => create(data, { onSuccess: () => setCreateOpen(false) })} isPending={creating} />
           </DialogContent>
         </Dialog>
@@ -65,7 +69,7 @@ export default function TagsTab() {
         <div className="rounded-xl border overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 border-b">
-              <tr>{["Name", "Slug", ""].map((h) => <th key={h} className="text-left px-4 py-3 font-medium text-muted-foreground">{h}</th>)}</tr>
+              <tr>{[t("colName"), t("colSlug"), ""].map((h) => <th key={h} className="text-left px-4 py-3 font-medium text-muted-foreground">{h}</th>)}</tr>
             </thead>
             <tbody>
               <AnimatePresence>
@@ -76,9 +80,7 @@ export default function TagsTab() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 justify-end">
                         <EditDialog tag={tag} />
-                        <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => { if (confirm(`Delete tag "${tag.name}"?`)) remove(tag.id); }}>
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => { if (confirm(t("deleteConfirm", { name: tag.name }))) remove(tag.id); }}><Trash2 className="h-3.5 w-3.5" /></Button>
                       </div>
                     </td>
                   </motion.tr>
@@ -86,7 +88,7 @@ export default function TagsTab() {
               </AnimatePresence>
             </tbody>
           </table>
-          {tags?.length === 0 && <p className="text-center py-10 text-muted-foreground">No tags yet</p>}
+          {tags?.length === 0 && <p className="text-center py-10 text-muted-foreground">{t("noTags")}</p>}
         </div>
       )}
     </div>

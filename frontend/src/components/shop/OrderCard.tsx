@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import type { Order } from "@/types";
 import { Badge } from "@/components/ui/badge";
@@ -8,43 +9,31 @@ import { Package, MapPin, Clock, XCircle } from "lucide-react";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
 import { useCancelOrder } from "@/hooks/useOrders";
 
-// Maps order status to a human-readable label and badge variant
-const STATUS_CONFIG: Record<
-  Order["status"],
-  { label: string; variant: "pending" | "assigned" | "picked_up" | "in_transit" | "delivered" | "cancelled"; progress: number }
-> = {
-  pending:    { label: "Pending",    variant: "pending",    progress: 10 },
-  assigned:   { label: "Assigned",   variant: "assigned",   progress: 30 },
-  picked_up:  { label: "Picked Up",  variant: "picked_up",  progress: 55 },
-  in_transit: { label: "In Transit", variant: "in_transit", progress: 75 },
-  delivered:  { label: "Delivered",  variant: "delivered",  progress: 100 },
-  cancelled:  { label: "Cancelled",  variant: "cancelled",  progress: 0 },
+const STATUS_VARIANTS: Record<Order["status"], "pending" | "assigned" | "picked_up" | "in_transit" | "delivered" | "cancelled"> = {
+  pending: "pending", assigned: "assigned", picked_up: "picked_up",
+  in_transit: "in_transit", delivered: "delivered", cancelled: "cancelled",
 };
 
-interface Props {
-  order: Order;
-  index?: number;
-}
+interface Props { order: Order; index?: number; }
 
 export default function OrderCard({ order, index = 0 }: Props) {
-  const config = STATUS_CONFIG[order.status];
+  const t = useTranslations("orders");
   const { currency } = useCurrencyStore();
   const { mutate: cancel, isPending: cancelling } = useCancelOrder();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.06 }}
-    >
+    <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.35, delay: index * 0.06 }}>
       <Card className="hover:shadow-md transition-shadow">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base flex items-center gap-2">
               <Package className="h-4 w-4 text-primary" />
-              Order #{order.id}
+              {t("order", { id: order.id })}
             </CardTitle>
-            <Badge variant={config.variant}>{config.label}</Badge>
+            <Badge variant={STATUS_VARIANTS[order.status]}>
+              {t(`status.${order.status}`)}
+            </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -52,13 +41,10 @@ export default function OrderCard({ order, index = 0 }: Props) {
             <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
             <span className="line-clamp-2">{order.shipping_address}</span>
           </div>
-
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4" />
             <span>{new Date(order.created_at).toLocaleDateString()}</span>
           </div>
-
-          {/* Items summary */}
           <div className="text-sm space-y-1">
             {order.items.slice(0, 2).map((item) => (
               <div key={item.id} className="flex justify-between text-muted-foreground">
@@ -70,24 +56,17 @@ export default function OrderCard({ order, index = 0 }: Props) {
               <p className="text-xs text-muted-foreground">+{order.items.length - 2} more items</p>
             )}
           </div>
-
           <div className="flex items-center justify-between pt-1 border-t">
-            <span className="text-sm font-semibold">Total</span>
+            <span className="text-sm font-semibold">{t("total")}</span>
             <span className="text-primary font-bold">{formatPrice(order.total_price, currency)}</span>
           </div>
-
           {order.status === "pending" && (
-            <Button
-              variant="outline"
-              size="sm"
+            <Button variant="outline" size="sm"
               className="w-full text-destructive border-destructive/30 hover:bg-destructive/5 gap-1.5"
               disabled={cancelling}
-              onClick={() => {
-                if (confirm(`Cancel order #${order.id}?`)) cancel(order.id);
-              }}
-            >
+              onClick={() => { if (confirm(t("confirmCancel", { id: order.id }))) cancel(order.id); }}>
               <XCircle className="h-4 w-4" />
-              {cancelling ? "Cancelling…" : "Cancel Order"}
+              {cancelling ? t("cancelling") : t("cancelOrder")}
             </Button>
           )}
         </CardContent>

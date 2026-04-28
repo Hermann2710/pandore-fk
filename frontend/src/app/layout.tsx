@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
-import QueryProvider from "@/components/layout/QueryProvider";
-import { AuthProvider } from "@/context/AuthContext";
-import { Toaster } from "sonner";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -12,27 +9,12 @@ export const metadata: Metadata = {
   description: "Premium shopping experience",
 };
 
-// Root layout is intentionally bare — each route group owns its shell.
-// AuthProvider wraps everything so useAuth() works in any component.
+// Minimal root layout — locale-specific providers live in [locale]/layout.tsx
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html suppressHydrationWarning>
       <body className={`${geist.variable} antialiased min-h-screen`}>
-        <QueryProvider>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              classNames: {
-                toast: "bg-card border border-border text-foreground shadow-lg",
-                success: "border-emerald-200",
-                error: "border-red-200",
-              },
-            }}
-          />
-        </QueryProvider>
+        {children}
       </body>
     </html>
   );

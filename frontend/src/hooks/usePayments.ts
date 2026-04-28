@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { paymentsApi } from "@/lib/api";
+import { useCartStore } from "@/store/cart";
+
 import { toast } from "sonner";
 
 export function usePaymentMethods() {
@@ -11,9 +13,11 @@ export function usePaymentMethods() {
 
 export function useConfirmPayment() {
   const qc = useQueryClient();
+  const clearCart = useCartStore((s) => s.clearCart);
   return useMutation({
     mutationFn: paymentsApi.confirm,
     onSuccess: () => {
+      clearCart(); // Cart cleared here — after payment is confirmed, not before
       qc.invalidateQueries({ queryKey: ["my-orders"] });
     },
     onError: () => toast.error("Payment confirmation failed"),

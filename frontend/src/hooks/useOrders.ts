@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { ordersApi } from "@/lib/api";
 import { useCartStore } from "@/store/cart";
 import { toast } from "sonner";
@@ -13,11 +13,11 @@ export function useMyOrders() {
 
 export function useCheckout() {
   const router = useRouter();
-  const clearCart = useCartStore((s) => s.clearCart);
   return useMutation({
     mutationFn: ordersApi.checkout,
     onSuccess: (res) => {
-      clearCart();
+      // Don't clear cart yet — wait for payment confirmation
+      // Cart is cleared in useConfirmPayment onSuccess
       router.push(`/checkout/${res.data.id}/confirm`);
     },
     onError: () => toast.error("Checkout failed. Please try again."),

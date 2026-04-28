@@ -60,7 +60,7 @@ export default function ProductStrip({ title, products, isLoading, emptyMessage 
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="shrink-0 w-48"
+              className="shrink-0 w-70"
             >
               <ProductCard product={product} index={i} />
             </motion.div>

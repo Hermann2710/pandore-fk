@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -11,15 +12,13 @@ import { useAuth } from "@/context/AuthContext";
 import { useUpdateProfile, useDeleteAvatar } from "@/hooks/useProfile";
 
 export default function ProfileInfoTab() {
+  const t = useTranslations("profile.info");
+  const tp = useTranslations("profile");
   const { user } = useAuth();
   const { mutate: update, isPending } = useUpdateProfile();
   const { mutate: deleteAvatar, isPending: deletingAvatar } = useDeleteAvatar();
 
-  const [form, setForm] = useState({
-    username: user?.username ?? "",
-    email: user?.email ?? "",
-    phone: user?.phone ?? "",
-  });
+  const [form, setForm] = useState({ username: user?.username ?? "", email: user?.email ?? "", phone: user?.phone ?? "" });
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
@@ -40,33 +39,24 @@ export default function ProfileInfoTab() {
     update(fd);
   };
 
-  const set =
-    (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
-      setForm((f) => ({ ...f, [field]: e.target.value }));
+  const set = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((f) => ({ ...f, [field]: e.target.value }));
 
-  const avatarUrl = avatarPreview
-    ?? (user?.avatar ? `http://localhost:8000${user.avatar}` : null);
+  const avatarUrl = avatarPreview ?? (user?.avatar
+    ? user.avatar.startsWith("http") ? user.avatar : `http://localhost:8000${user.avatar}`
+    : null);
 
   return (
     <Card>
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Avatar upload */}
           <div className="flex items-center gap-5">
             <div className="relative">
               <div className="h-20 w-20 rounded-2xl overflow-hidden bg-muted border">
-                {avatarUrl ? (
-                  <Image
-                    src={avatarUrl}
-                    alt="Avatar"
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-2xl font-black text-muted-foreground">
-                    {user?.username?.[0]?.toUpperCase()}
-                  </div>
-                )}
+                {avatarUrl
+                  ? <Image src={avatarUrl} alt="Avatar" fill className="object-cover" />
+                  : <div className="flex h-full items-center justify-center text-2xl font-black text-muted-foreground">{user?.username?.[0]?.toUpperCase()}</div>
+                }
               </div>
               <label className="absolute -bottom-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-primary text-white shadow-md hover:bg-emerald-700 transition-colors">
                 <Camera className="h-3.5 w-3.5" />
@@ -77,13 +67,12 @@ export default function ProfileInfoTab() {
               <p className="font-semibold">{user?.username}</p>
               <p className="text-sm text-muted-foreground capitalize">{user?.role}</p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Member since {user?.date_joined ? new Date(user.date_joined).toLocaleDateString() : "—"}
+                {tp("memberSince", { date: user?.date_joined ? new Date(user.date_joined).toLocaleDateString() : "—" })}
               </p>
-              {(avatarUrl && !avatarPreview) && (
-                <button type="button" onClick={() => deleteAvatar()}
-                  disabled={deletingAvatar}
+              {avatarUrl && !avatarPreview && (
+                <button type="button" onClick={() => deleteAvatar()} disabled={deletingAvatar}
                   className="mt-1.5 flex items-center gap-1 text-xs text-destructive hover:underline disabled:opacity-50">
-                  <Trash2 className="h-3 w-3" /> Remove avatar
+                  <Trash2 className="h-3 w-3" /> {t("removeAvatar")}
                 </button>
               )}
             </div>
@@ -91,43 +80,22 @@ export default function ProfileInfoTab() {
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                value={form.username}
-                onChange={set("username")}
-                required
-              />
+              <Label htmlFor="username">{t("username")}</Label>
+              <Input id="username" value={form.username} onChange={set("username")} required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={form.email}
-                onChange={set("email")}
-                required
-              />
+              <Label htmlFor="email">{t("email")}</Label>
+              <Input id="email" type="email" value={form.email} onChange={set("email")} required />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="phone">
-                Phone{" "}
-                <span className="text-muted-foreground font-normal">
-                  (optional)
-                </span>
-              </Label>
-              <Input
-                id="phone"
-                placeholder="+1 555 0100"
-                value={form.phone}
-                onChange={set("phone")}
-              />
+              <Label htmlFor="phone">{t("phoneOptional")}</Label>
+              <Input id="phone" placeholder="+237 6 00 00 00 00" value={form.phone} onChange={set("phone")} />
             </div>
           </div>
 
           <motion.div whileTap={{ scale: 0.98 }}>
             <Button type="submit" variant="luxury" disabled={isPending}>
-              {isPending ? "Saving…" : "Save Changes"}
+              {isPending ? t("saving") : t("saveChanges")}
             </Button>
           </motion.div>
         </form>
