@@ -6,10 +6,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# System deps for Pillow + psycopg2
+# System deps for Pillow
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg-dev libpng-dev libwebp-dev \
-    libpq-dev gcc \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python deps
