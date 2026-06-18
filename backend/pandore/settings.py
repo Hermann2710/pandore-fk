@@ -7,9 +7,9 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "pandore-dev-secret-key-change-in-production"
-DEBUG = True
-ALLOWED_HOSTS = ["*"]
+SECRET_KEY = os.environ.get("SECRET_KEY", "pandore-dev-secret-key-change-in-production")
+DEBUG = os.environ.get("DEBUG", "True") == "True"
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -79,6 +80,8 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -102,13 +105,14 @@ SIMPLE_JWT = {
 }
 
 # ── CORS ─────────────────────────────────────────────────────────────────────
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+_cors_origins = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:3000")
+CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins.split(",")]
 CORS_ALLOW_CREDENTIALS = True  # Required for cookies to be sent cross-origin
 
 # ── Cookie names ─────────────────────────────────────────────────────────────
 AUTH_COOKIE_ACCESS = "pandore_access"
 AUTH_COOKIE_REFRESH = "pandore_refresh"
-AUTH_COOKIE_SECURE = False   # Set True in production (HTTPS)
+AUTH_COOKIE_SECURE = os.environ.get("AUTH_COOKIE_SECURE", "False") == "True"
 AUTH_COOKIE_SAMESITE = "Lax"
 
 # ── Brevo (Sendinblue) ────────────────────────────────────────────────────────
