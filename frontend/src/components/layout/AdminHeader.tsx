@@ -1,24 +1,20 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { ChevronRight, Bell, Search } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { ChevronRight, LogOut } from "lucide-react";
 import { useLogout } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
 
-// Static map — avoids dynamic key lookup which throws on missing keys in next-intl
 const BREADCRUMB_KEYS: Record<string, string> = {
-  admin:          "admin",
-  orders:         "orders",
-  products:       "products",
-  categories:     "categories",
-  tags:           "tags",
-  users:          "users",
-  homepage:       "homepage",
-  currencies:     "currencies",
-  newsletter:     "newsletter",
-  payments:       "payments",
+  admin:           "admin",
+  orders:          "orders",
+  products:        "products",
+  categories:      "categories",
+  tags:            "tags",
+  users:           "users",
+  homepage:        "homepage",
+  currencies:      "currencies",
+  newsletter:      "newsletter",
+  payments:        "payments",
   "site-settings": "siteSettings",
 };
 
@@ -28,19 +24,18 @@ function Breadcrumbs() {
   const segments = pathname.split("/").filter(Boolean);
 
   return (
-    <nav className="flex items-center gap-1 text-sm">
+    <nav className="flex items-center gap-1.5 text-sm">
       {segments.map((seg, i) => {
         const href = "/" + segments.slice(0, i + 1).join("/");
         const isLast = i === segments.length - 1;
-        // Use the static map — fall back to the raw segment if not found
         const key = BREADCRUMB_KEYS[seg];
         const label = key ? t(key as any) : seg;
         return (
-          <span key={href} className="flex items-center gap-1">
-            {i > 0 && <ChevronRight className="h-3.5 w-3.5 text-slate-400" />}
+          <span key={href} className="flex items-center gap-1.5">
+            {i > 0 && <ChevronRight className="h-3.5 w-3.5 text-slate-300" />}
             {isLast
-              ? <span className="font-semibold text-slate-900">{label}</span>
-              : <Link href={href} className="text-slate-500 hover:text-slate-700 transition-colors">{label}</Link>
+              ? <span className="font-semibold text-slate-800">{label}</span>
+              : <Link href={href} className="text-slate-400 hover:text-slate-600 transition-colors">{label}</Link>
             }
           </span>
         );
@@ -50,36 +45,18 @@ function Breadcrumbs() {
 }
 
 export default function AdminHeader() {
-  const t = useTranslations("common");
-  const { user } = useAuth();
   const { mutate: logout } = useLogout();
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-white px-6 shrink-0">
+    <header className="flex h-14 items-center justify-between border-b border-slate-100 bg-white/90 backdrop-blur-sm px-6 shrink-0">
       <Breadcrumbs />
-      <div className="flex items-center gap-3">
-        <div className="hidden md:flex items-center gap-2 rounded-lg border bg-slate-50 px-3 py-1.5 text-sm text-slate-400">
-          <Search className="h-3.5 w-3.5" />
-          <span>{t("search")}…</span>
-          <kbd className="ml-2 rounded border bg-white px-1.5 py-0.5 text-[10px] font-mono">⌘K</kbd>
-        </div>
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-4 w-4" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-emerald-500" />
-        </Button>
-        <div className="flex items-center gap-2 border-l pl-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm">
-            {user?.username?.[0]?.toUpperCase()}
-          </div>
-          <div className="hidden md:block">
-            <p className="text-sm font-medium leading-tight">{user?.username}</p>
-            <p className="text-xs text-slate-500 capitalize">{user?.role}</p>
-          </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-500" onClick={() => logout()}>
-            <LogOut className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <button
+        onClick={() => logout()}
+        title="Déconnexion"
+        className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all duration-200"
+      >
+        <LogOut className="h-4 w-4" />
+      </button>
     </header>
   );
 }

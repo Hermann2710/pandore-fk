@@ -3,3 +3,6 @@ djangorestframework
 djangorestframework-simplejwt
 django-cors-headers
 Pillow
+sib-api-v3-sdk
+Markdown
+python-dotenv

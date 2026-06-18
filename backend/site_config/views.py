@@ -37,7 +37,7 @@ class AdminDeleteLogoView(APIView):
         settings = SiteSettings.get()
         if settings.logo:
             settings.logo.delete(save=False)
-            settings.logo = None
+            settings.logo = None # type: ignore
             settings.save()
         return Response({"detail": "Logo removed."})
 
@@ -46,7 +46,7 @@ class AdminSocialLinkListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAdminRole]
     serializer_class = SocialLinkSerializer
 
-    def get_queryset(self):
+    def get_queryset(self): # type: ignore
         return SocialLink.objects.filter(site=SiteSettings.get())
 
     def perform_create(self, serializer):
@@ -57,5 +57,5 @@ class AdminSocialLinkDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAdminRole]
     serializer_class = SocialLinkSerializer
 
-    def get_queryset(self):
+    def get_queryset(self): # type: ignore
         return SocialLink.objects.filter(site=SiteSettings.get())

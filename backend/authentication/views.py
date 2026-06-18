@@ -10,7 +10,7 @@ from users.serializers import UserSerializer
 from .serializers import RegisterSerializer
 
 
-def _set_auth_cookies(response, refresh):
+def _set_auth_cookies(response, refresh, user=None):
     access = str(refresh.access_token)
     opts = dict(
         httponly=True,
@@ -20,6 +20,19 @@ def _set_auth_cookies(response, refresh):
     )
     response.set_cookie(settings.AUTH_COOKIE_ACCESS, access, max_age=60 * 30, **opts)
     response.set_cookie(settings.AUTH_COOKIE_REFRESH, str(refresh), max_age=60 * 60 * 24 * 7, **opts)
+
+    # Non-HTTP-only role cookie — readable by Next.js middleware for route protection.
+    # Contains only the role string (not a token), so it carries no security risk.
+    if user is not None:
+        response.set_cookie(
+            "pandore_role",
+            user.role,
+            max_age=60 * 60 * 24 * 7,
+            httponly=False,   # Must be readable by the middleware
+            secure=settings.AUTH_COOKIE_SECURE,
+            samesite=settings.AUTH_COOKIE_SAMESITE,
+            path="/",
+        )
 
 
 class RegisterView(APIView):
@@ -31,7 +44,7 @@ class RegisterView(APIView):
         user = serializer.save()
         refresh = RefreshToken.for_user(user)
         response = Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
-        _set_auth_cookies(response, refresh)
+        _set_auth_cookies(response, refresh, user)
         return response
 
 
@@ -49,7 +62,7 @@ class LoginView(APIView):
             return Response({"detail": "Invalid credentials."}, status=400)
         refresh = RefreshToken.for_user(user)
         response = Response(UserSerializer(user).data)
-        _set_auth_cookies(response, refresh)
+        _set_auth_cookies(response, refresh, user)
         return response
 
 
@@ -58,6 +71,7 @@ class LogoutView(APIView):
         response = Response({"detail": "Logged out."})
         response.delete_cookie(settings.AUTH_COOKIE_ACCESS)
         response.delete_cookie(settings.AUTH_COOKIE_REFRESH)
+        response.delete_cookie("pandore_role")
         return response
 
 

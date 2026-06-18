@@ -1,5 +1,9 @@
 from pathlib import Path
 from datetime import timedelta
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -106,3 +110,9 @@ AUTH_COOKIE_ACCESS = "pandore_access"
 AUTH_COOKIE_REFRESH = "pandore_refresh"
 AUTH_COOKIE_SECURE = False   # Set True in production (HTTPS)
 AUTH_COOKIE_SAMESITE = "Lax"
+
+# ── Brevo (Sendinblue) ────────────────────────────────────────────────────────
+BREVO_API_KEY        = os.environ.get("BREVO_API_KEY", "")
+BREVO_SENDER_EMAIL   = os.environ.get("BREVO_SENDER_EMAIL", "noreply@pandore.cm")
+BREVO_SENDER_NAME    = os.environ.get("BREVO_SENDER_NAME", "Pandore")
+BREVO_LIST_ID        = int(os.environ.get("BREVO_LIST_ID", "0"))  # Brevo contact list id

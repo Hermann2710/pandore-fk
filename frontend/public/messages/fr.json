@@ -40,7 +40,8 @@
     "all": "Tout",
     "allCategory": "Tout {name}",
     "seeAllCategory": "Voir tout dans {name} →",
-    "luxuryStore": "Boutique Luxe"
+    "luxuryStore": "Boutique Luxe",
+    "more": "Plus"
   },
   "auth": {
     "login": "Se connecter",
@@ -580,7 +581,9 @@
       "colStatus": "Statut",
       "colSubscribed": "Inscrit le",
       "statusActive": "Actif",
-      "statusUnsubscribed": "Désabonné"
+      "statusUnsubscribed": "Désabonné",
+      "confirmSendTitle": "Envoyer la newsletter",
+      "confirmSendWarning": "Cette action enverra un email à {count} abonné(s) actif(s). Cette opération est irréversible."
     },
     "homepage": {
       "newSection": "Nouvelle section",

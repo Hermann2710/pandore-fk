@@ -7,10 +7,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useCartStore } from "@/store/cart";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
 import { useRouter } from "@/i18n/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CartSummary() {
   const t = useTranslations("cart");
   const router = useRouter();
+  const { user } = useAuth();
   const { items, totalPrice } = useCartStore();
   const { currency } = useCurrencyStore();
 
@@ -33,7 +35,12 @@ export default function CartSummary() {
         </div>
 
         <motion.div whileTap={{ scale: 0.97 }}>
-          <Button variant="luxury" size="lg" className="w-full gap-2" onClick={() => router.push("/checkout")}>
+          <Button
+            variant="luxury"
+            size="lg"
+            className="w-full gap-2"
+            onClick={() => router.push(user ? "/checkout" : "/login")}
+          >
             {t("proceedToCheckout")} <ArrowRight className="h-4 w-4" />
           </Button>
         </motion.div>

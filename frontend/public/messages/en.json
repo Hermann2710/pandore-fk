@@ -40,7 +40,8 @@
     "all": "All",
     "allCategory": "All {name}",
     "seeAllCategory": "See all in {name} →",
-    "luxuryStore": "Luxury Store"
+    "luxuryStore": "Luxury Store",
+    "more": "More"
   },
   "auth": {
     "login": "Sign In",
@@ -123,7 +124,6 @@
   },
   "checkout": {
     "title": "Checkout",
-    "shipping": "Shipping",
     "payment": "Payment",
     "shippingAddress": "Shipping Address",
     "selectAddress": "Select a saved address…",
@@ -300,10 +300,7 @@
     "panel": "Admin Panel",
     "overview": "Overview",
     "orders": "Orders",
-    "products": "Products",
     "categories": "Categories",
-    "tags": "Tags",
-    "users": "Users",
     "homepage": "Homepage",
     "currencies": "Currencies",
     "newsletter": "Newsletter",
@@ -572,7 +569,9 @@
       "colStatus": "Status",
       "colSubscribed": "Subscribed",
       "statusActive": "Active",
-      "statusUnsubscribed": "Unsubscribed"
+      "statusUnsubscribed": "Unsubscribed",
+      "confirmSendTitle": "Send Newsletter",
+      "confirmSendWarning": "This will send an email to {count} active subscriber(s). This action cannot be undone."
     },
     "homepage": {
       "newSection": "New Section",
