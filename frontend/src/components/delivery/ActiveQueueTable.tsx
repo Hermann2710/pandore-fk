@@ -12,19 +12,19 @@ interface Props {
   isLoading: boolean;
 }
 
-const STATUS_CFG: Record<string, { label: string; color: string; bg: string; dot: string }> = {
-  assigned:   { label: "Assignée",   color: "text-blue-700",   bg: "bg-blue-50",   dot: "bg-blue-400" },
-  picked_up:  { label: "Récupérée",  color: "text-violet-700", bg: "bg-violet-50", dot: "bg-violet-400" },
-  in_transit: { label: "En transit", color: "text-orange-700", bg: "bg-orange-50", dot: "bg-orange-400" },
-  delivered:  { label: "Livrée",     color: "text-emerald-700",bg: "bg-emerald-50",dot: "bg-emerald-500" },
-};
-
 function StatusPill({ status }: { status: string }) {
-  const cfg = STATUS_CFG[status] ?? { label: status, color: "text-slate-700", bg: "bg-slate-50", dot: "bg-slate-400" };
+  const t = useTranslations("orders");
+  const COLORS: Record<string, { color: string; bg: string; dot: string }> = {
+    assigned:   { color: "text-blue-700",   bg: "bg-blue-50",   dot: "bg-blue-400" },
+    picked_up:  { color: "text-violet-700", bg: "bg-violet-50", dot: "bg-violet-400" },
+    in_transit: { color: "text-orange-700", bg: "bg-orange-50", dot: "bg-orange-400" },
+    delivered:  { color: "text-emerald-700",bg: "bg-emerald-50",dot: "bg-emerald-500" },
+  };
+  const cfg = COLORS[status] ?? { color: "text-slate-700", bg: "bg-slate-50", dot: "bg-slate-400" };
   return (
     <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold", cfg.bg, cfg.color)}>
       <span className={cn("h-1.5 w-1.5 rounded-full", cfg.dot)} />
-      {cfg.label}
+      {t(`status.${status as keyof ReturnType<typeof t>}` as any)}
     </span>
   );
 }

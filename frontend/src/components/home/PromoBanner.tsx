@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export default function PromoBanner({ section }: Props) {
+  const t = useTranslations("home");
   const href = section.cta_url || "/catalog";
 
   return (
@@ -35,7 +37,7 @@ export default function PromoBanner({ section }: Props) {
       <div className="relative z-10 flex items-center justify-between h-full px-10 py-8">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-white/80 text-xs font-semibold uppercase tracking-widest">
-            <Sparkles className="h-3.5 w-3.5" /> Limited Offer
+            <Sparkles className="h-3.5 w-3.5" /> {t("limitedOffer")}
           </div>
           <h2 className="text-2xl md:text-3xl font-black text-white">
             {section.title}
@@ -51,7 +53,7 @@ export default function PromoBanner({ section }: Props) {
           asChild
         >
           <Link href={href}>
-            {section.cta_label || "Shop Now"} <ArrowRight className="h-4 w-4" />
+            {section.cta_label || t("shopNow")} <ArrowRight className="h-4 w-4" />
           </Link>
         </Button>
       </div>

@@ -10,10 +10,10 @@ import { cn } from "@/lib/utils";
 import type { Order } from "@/types";
 
 const STEPS = [
-  { key: "assigned",   label: "Assignée" },
-  { key: "picked_up", label: "Récupérée" },
-  { key: "in_transit", label: "En transit" },
-  { key: "delivered", label: "Livrée" },
+  { key: "assigned",   labelKey: "stepAssigned" },
+  { key: "picked_up", labelKey: "stepPickedUp" },
+  { key: "in_transit", labelKey: "stepInTransit" },
+  { key: "delivered", labelKey: "stepDelivered" },
 ] as const;
 
 const STEP_INDEX: Record<string, number> = {
@@ -35,6 +35,7 @@ export default function DeliveryOrderCard({ order, index }: Props) {
   const { mutate: advance, isPending } = useUpdateDeliveryStatus();
   const stepIdx = STEP_INDEX[order.status] ?? 0;
   const isDelivered = order.status === "delivered";
+  const steps = STEPS.map((s) => ({ ...s, label: t(s.labelKey) }));
 
   return (
     <motion.div
@@ -63,24 +64,24 @@ export default function DeliveryOrderCard({ order, index }: Props) {
         {/* Header */}
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">Commande</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">{t("orderLabel")}</p>
             <p className="text-lg font-black text-slate-900 leading-none">#{order.id}</p>
           </div>
           {isDelivered ? (
             <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold bg-emerald-50 text-emerald-700">
               <CheckCircle className="h-3.5 w-3.5" />
-              Livrée
+              {t("stepDelivered")}
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold bg-blue-50 text-blue-700">
-              {STEPS[stepIdx].label}
+              {steps[stepIdx].label}
             </span>
           )}
         </div>
 
         {/* Step tracker */}
         <div className="flex items-center justify-between">
-          {STEPS.map((step, i) => {
+          {steps.map((step, i) => {
             const isDone = i <= stepIdx;
             const isCurrent = i === stepIdx;
             return (
@@ -140,7 +141,7 @@ export default function DeliveryOrderCard({ order, index }: Props) {
         {/* Items */}
         <div className="space-y-2">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-            <Package className="h-3 w-3" /> Articles ({order.items.length})
+            <Package className="h-3 w-3" /> {t("items")} ({order.items.length})
           </p>
           <div className="space-y-1.5">
             {order.items.map((item) => {
@@ -168,7 +169,7 @@ export default function DeliveryOrderCard({ order, index }: Props) {
             })}
           </div>
           <div className="flex items-center justify-between pt-1 border-t border-slate-100 mt-2">
-            <p className="text-xs text-slate-500 font-medium">Total</p>
+            <p className="text-xs text-slate-500 font-medium">{t("total")}</p>
             <p className="text-sm font-black text-slate-900">{formatPrice(order.total_price, currency)}</p>
           </div>
         </div>

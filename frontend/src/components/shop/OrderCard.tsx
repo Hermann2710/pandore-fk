@@ -48,12 +48,14 @@ export default function OrderCard({ order, index = 0 }: Props) {
           <div className="text-sm space-y-1">
             {order.items.slice(0, 2).map((item) => (
               <div key={item.id} className="flex justify-between text-muted-foreground">
-                <span className="truncate">{item.product?.name ?? "Deleted product"} ×{item.quantity}</span>
+                <span className="truncate">
+                {item.product?.name ?? t("deletedProduct")} ×{item.quantity}
+              </span>
                 <span>{formatPrice(item.subtotal, currency)}</span>
               </div>
             ))}
             {order.items.length > 2 && (
-              <p className="text-xs text-muted-foreground">+{order.items.length - 2} more items</p>
+              <p className="text-xs text-muted-foreground">{t("moreItems", { count: order.items.length - 2 })}</p>
             )}
           </div>
           <div className="flex items-center justify-between pt-1 border-t">

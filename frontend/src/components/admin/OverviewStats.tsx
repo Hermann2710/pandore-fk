@@ -12,35 +12,36 @@ import { ordersApi, adminCatalogApi, authApi } from "@/lib/api";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
 import { useAuth } from "@/context/AuthContext";
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; dot: string; bar: string }> = {
-  pending:    { label: "En attente",  color: "text-amber-700",   bg: "bg-amber-50",    dot: "bg-amber-400",   bar: "bg-amber-400" },
-  assigned:   { label: "Assignée",    color: "text-blue-700",    bg: "bg-blue-50",     dot: "bg-blue-400",    bar: "bg-blue-400" },
-  picked_up:  { label: "Récupérée",   color: "text-violet-700",  bg: "bg-violet-50",   dot: "bg-violet-400",  bar: "bg-violet-400" },
-  in_transit: { label: "En transit",  color: "text-orange-700",  bg: "bg-orange-50",   dot: "bg-orange-400",  bar: "bg-orange-400" },
-  delivered:  { label: "Livrée",      color: "text-emerald-700", bg: "bg-emerald-50",  dot: "bg-emerald-500", bar: "bg-emerald-500" },
-  cancelled:  { label: "Annulée",     color: "text-red-700",     bg: "bg-red-50",      dot: "bg-red-400",     bar: "bg-red-400" },
+const STATUS_CONFIG: Record<string, { color: string; bg: string; dot: string; bar: string }> = {
+  pending:    { color: "text-amber-700",   bg: "bg-amber-50",    dot: "bg-amber-400",   bar: "bg-amber-400" },
+  assigned:   { color: "text-blue-700",    bg: "bg-blue-50",     dot: "bg-blue-400",    bar: "bg-blue-400" },
+  picked_up:  { color: "text-violet-700",  bg: "bg-violet-50",   dot: "bg-violet-400",  bar: "bg-violet-400" },
+  in_transit: { color: "text-orange-700",  bg: "bg-orange-50",   dot: "bg-orange-400",  bar: "bg-orange-400" },
+  delivered:  { color: "text-emerald-700", bg: "bg-emerald-50",  dot: "bg-emerald-500", bar: "bg-emerald-500" },
+  cancelled:  { color: "text-red-700",     bg: "bg-red-50",      dot: "bg-red-400",     bar: "bg-red-400" },
 };
 
 function StatusBadge({ status }: { status: string }) {
-  const cfg = STATUS_CONFIG[status] ?? { label: status, color: "text-slate-700", bg: "bg-slate-50", dot: "bg-slate-400", bar: "" };
+  const to = useTranslations("orders");
+  const cfg = STATUS_CONFIG[status] ?? { color: "text-slate-700", bg: "bg-slate-50", dot: "bg-slate-400", bar: "" };
   return (
     <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium", cfg.bg, cfg.color)}>
       <span className={cn("h-1.5 w-1.5 rounded-full", cfg.dot)} />
-      {cfg.label}
+      {to(`status.${status}` as any)}
     </span>
   );
 }
 
 const STAT_STYLES = [
-  { color: "text-emerald-600", iconBg: "bg-emerald-500", ringColor: "ring-emerald-100", accent: "#10b981" },
-  { color: "text-blue-600",    iconBg: "bg-blue-500",    ringColor: "ring-blue-100",    accent: "#3b82f6" },
-  { color: "text-orange-500",  iconBg: "bg-orange-500",  ringColor: "ring-orange-100",  accent: "#f97316" },
-  { color: "text-purple-600",  iconBg: "bg-purple-500",  ringColor: "ring-purple-100",  accent: "#a855f7" },
-  { color: "text-rose-600",    iconBg: "bg-rose-500",    ringColor: "ring-rose-100",    accent: "#f43f5e" },
+  { color: "text-emerald-600", iconBg: "bg-emerald-500", accent: "#10b981" },
+  { color: "text-blue-600",    iconBg: "bg-blue-500",    accent: "#3b82f6" },
+  { color: "text-orange-500",  iconBg: "bg-orange-500",  accent: "#f97316" },
+  { color: "text-purple-600",  iconBg: "bg-purple-500",  accent: "#a855f7" },
+  { color: "text-rose-600",    iconBg: "bg-rose-500",    accent: "#f43f5e" },
 ];
 
 export default function OverviewStats() {
-  const t = useTranslations("admin");
+  const t  = useTranslations("admin");
   const { currency } = useCurrencyStore();
   const { user } = useAuth();
 
@@ -54,12 +55,15 @@ export default function OverviewStats() {
   const delivered = allOrders?.filter((o) => o.status === "delivered").length ?? 0;
   const total     = allOrders?.length ?? 0;
 
+  const hour = new Date().getHours();
+  const greetingText = hour < 12 ? t("greetingMorning" as any) : hour < 18 ? t("greetingAfternoon" as any) : t("greetingEvening" as any);
+
   const stats = [
-    { label: t("totalRevenue"), value: formatPrice(revenue, currency), icon: TrendingUp,  sub: delivered > 0 ? `${delivered} livrée${delivered > 1 ? "s" : ""}` : "Aucune livrée" },
-    { label: t("totalOrders"),  value: total,                          icon: ClipboardList, sub: pending > 0 ? `${pending} en attente` : "Aucune en attente" },
-    { label: "En livraison",    value: transit,                        icon: Truck,         sub: transit > 0 ? "En cours de transit" : "Aucun en transit" },
-    { label: t("products"),     value: products?.length ?? 0,          icon: ShoppingBag,   sub: "Produits actifs" },
-    { label: t("users"),        value: allUsers?.length ?? 0,          icon: Users,         sub: "Comptes enregistrés" },
+    { label: t("totalRevenue"), value: formatPrice(revenue, currency), icon: TrendingUp,   sub: delivered > 0 ? t("deliveredCount", { count: delivered }) : t("noneDelivered") },
+    { label: t("totalOrders"),  value: total,                          icon: ClipboardList, sub: pending > 0 ? t("pendingCount", { count: pending }) : t("nonePending") },
+    { label: t("inDelivery"),   value: transit,                        icon: Truck,         sub: transit > 0 ? t("inTransitSub") : t("noInTransit") },
+    { label: t("products"),     value: products?.length ?? 0,          icon: ShoppingBag,   sub: t("activeProductsSub") },
+    { label: t("users"),        value: allUsers?.length ?? 0,          icon: Users,         sub: t("registeredAccounts") },
   ];
 
   const statusBreakdown = Object.entries(
@@ -68,9 +72,6 @@ export default function OverviewStats() {
       return acc;
     }, {})
   ).sort((a, b) => b[1] - a[1]);
-
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
 
   return (
     <div className="space-y-6">
@@ -86,20 +87,20 @@ export default function OverviewStats() {
         <div className="relative flex items-center justify-between">
           <div>
             <p className="text-emerald-400 text-sm font-medium mb-1">
-              {greeting}{user?.username ? `, ${user.username}` : ""} 👋
+            {greetingText}{user?.username ? `, ${user.username}` : ""} 👋
             </p>
-            <h1 className="text-2xl font-black text-white tracking-tight">Tableau de bord</h1>
-            <p className="text-slate-400 text-sm mt-1">Vue d&apos;ensemble de votre boutique</p>
+            <h1 className="text-2xl font-black text-white tracking-tight">{t("dashboard")}</h1>
+            <p className="text-slate-400 text-sm mt-1">{t("storeOverview")}</p>
           </div>
           <div className="hidden md:flex items-center gap-6 text-right">
             <div>
               <p className="text-3xl font-black text-white">{total}</p>
-              <p className="text-xs text-slate-400 mt-0.5">Commandes totales</p>
+              <p className="text-xs text-slate-400 mt-0.5">{t("totalOrdersSub")}</p>
             </div>
             <div className="h-10 w-px bg-white/10" />
             <div>
               <p className="text-3xl font-black text-emerald-400">{formatPrice(revenue, currency)}</p>
-              <p className="text-xs text-slate-400 mt-0.5">Revenus totaux</p>
+              <p className="text-xs text-slate-400 mt-0.5">{t("totalRevenueSub")}</p>
             </div>
           </div>
         </div>
@@ -150,7 +151,7 @@ export default function OverviewStats() {
               href="/admin/orders"
               className="flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors px-3 py-1.5 rounded-lg hover:bg-emerald-50"
             >
-              Voir tout <ArrowRight className="h-3.5 w-3.5" />
+              {t("viewAll")} <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
           {(allOrders?.length ?? 0) === 0 ? (
@@ -176,7 +177,7 @@ export default function OverviewStats() {
                     <td className="px-6 py-3.5 text-slate-600 font-medium">{order.customer.username}</td>
                     <td className="px-6 py-3.5 font-bold text-emerald-600">{formatPrice(order.total_price, currency)}</td>
                     <td className="px-6 py-3.5"><StatusBadge status={order.status} /></td>
-                    <td className="px-6 py-3.5 text-slate-400 text-xs">{new Date(order.created_at).toLocaleDateString("fr-FR")}</td>
+                    <td className="px-6 py-3.5 text-slate-400 text-xs">{new Date(order.created_at).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -196,22 +197,22 @@ export default function OverviewStats() {
                 <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900">
                   <CheckCircle2 className="h-3.5 w-3.5 text-white" />
                 </span>
-                Répartition des statuts
+                {t("statusBreakdown")}
               </h2>
             </div>
             <div className="p-5 space-y-3.5">
               {total === 0 ? (
-                <p className="text-sm text-slate-400 text-center py-6">Aucune commande</p>
+                <p className="text-sm text-slate-400 text-center py-6">{t("noOrders")}</p>
               ) : (
                 statusBreakdown.map(([status, count]) => {
-                  const cfg = STATUS_CONFIG[status] ?? { label: status, dot: "bg-slate-400", bar: "bg-slate-400", bg: "bg-slate-50", color: "text-slate-700" };
+                  const cfg = STATUS_CONFIG[status] ?? { dot: "bg-slate-400", bar: "bg-slate-400" };
                   const pct = Math.round((count / total) * 100);
                   return (
                     <div key={status} className="space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
                           <span className={cn("h-2 w-2 rounded-full shrink-0", cfg.dot)} />
-                          {cfg.label}
+                          <StatusBadge status={status} />
                         </span>
                         <span className="text-xs font-bold text-slate-500">{count} <span className="font-normal text-slate-300">({pct}%)</span></span>
                       </div>
@@ -236,12 +237,12 @@ export default function OverviewStats() {
             className="rounded-2xl border border-slate-100 bg-white overflow-hidden"
           >
             <div className="px-5 py-4 border-b border-slate-50">
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Accès rapide</p>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t("quickAccess")}</p>
             </div>
             <div className="p-3 space-y-1">
               {[
-                { label: "Commandes en attente", href: "/admin/orders?status=pending", icon: Clock, color: "text-amber-500", bg: "bg-amber-50" },
-                { label: "Commandes en transit", href: "/admin/orders?status=in_transit", icon: Truck, color: "text-orange-500", bg: "bg-orange-50" },
+                { labelKey: "pendingOrders",   href: "/admin/orders?status=pending",    icon: Clock, color: "text-amber-500",  bg: "bg-amber-50" },
+                { labelKey: "inTransitOrders", href: "/admin/orders?status=in_transit", icon: Truck, color: "text-orange-500", bg: "bg-orange-50" },
               ].map((link) => (
                 <Link
                   key={link.href}
@@ -251,7 +252,7 @@ export default function OverviewStats() {
                   <span className={cn("flex h-7 w-7 items-center justify-center rounded-lg transition-colors", link.bg)}>
                     <link.icon className={cn("h-3.5 w-3.5", link.color)} />
                   </span>
-                  <span className="flex-1 text-xs font-medium">{link.label}</span>
+                  <span className="flex-1 text-xs font-medium">{t(link.labelKey as any)}</span>
                   <ArrowRight className="h-3.5 w-3.5 text-slate-300 group-hover:text-slate-500 transition-colors" />
                 </Link>
               ))}

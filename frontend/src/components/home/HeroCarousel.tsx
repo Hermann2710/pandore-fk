@@ -1,4 +1,4 @@
-"use client";
+import { useTranslations } from "next-intl";
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
@@ -15,6 +15,7 @@ interface Props {
 }
 
 export default function HeroCarousel({ section }: Props) {
+  const t = useTranslations("home");
   const [current, setCurrent] = useState(0);
   const products = section.products;
   const addItem = useCartStore((s) => s.addItem);
@@ -72,7 +73,7 @@ export default function HeroCarousel({ section }: Props) {
             </p>
             <div className="flex gap-3 pt-2">
               <Button variant="link" size="lg" asChild>
-                <Link href={`/product/${product.slug}`}>View Product</Link>
+                <Link href={`/product/${product.slug}`}>{t("viewProduct")}</Link>
               </Button>
               <Button
                 variant="luxury"
@@ -80,11 +81,11 @@ export default function HeroCarousel({ section }: Props) {
                 className="border-slate-600 text-white hover:bg-slate-800 gap-2"
                 onClick={() => {
                   addItem(product);
-                  toast.success(`${product.name} added to cart`);
+                  toast.success(t("addedToCart", { name: product.name }));
                 }}
                 disabled={product.stock === 0}
               >
-                <ShoppingCart className="h-4 w-4" /> Add to Cart
+                <ShoppingCart className="h-4 w-4" /> {t("addToCart")}
               </Button>
             </div>
           </div>

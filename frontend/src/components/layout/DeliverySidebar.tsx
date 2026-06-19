@@ -179,7 +179,7 @@ export default function DeliverySidebar({ collapsed, onToggle }: Props) {
                   className="min-w-0 flex-1"
                 >
                   <p className="text-xs font-semibold text-slate-200 truncate leading-tight">{user.username}</p>
-                  <p className="text-[10px] text-blue-400/70 capitalize leading-tight mt-0.5">Livreur</p>
+                  <p className="text-[10px] text-blue-400/70 capitalize leading-tight mt-0.5">{t("sidebarSubtitle")}</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -189,7 +189,7 @@ export default function DeliverySidebar({ collapsed, onToggle }: Props) {
                 className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:text-red-400 transition-all duration-200"
                 onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(239,68,68,0.1)")}
                 onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                title="Déconnexion"
+                title={t("sidebarSubtitle")}
               >
                 <LogOut className="h-3.5 w-3.5" />
               </button>

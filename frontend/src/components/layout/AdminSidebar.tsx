@@ -87,7 +87,7 @@ export default function AdminSidebar({ collapsed, onToggle }: Props) {
                 {siteName}
               </p>
               <p className="text-[10px] text-emerald-500/70 uppercase tracking-[0.18em] font-semibold mt-0.5">
-                Admin Panel
+                {t("adminPanelLabel")}
               </p>
             </motion.div>
           )}
@@ -107,7 +107,7 @@ export default function AdminSidebar({ collapsed, onToggle }: Props) {
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.14em] px-3 mb-2"
                 >
-                  {group.label}
+                  {group.labelKey === "catalog" ? t("catalogGroup") : t("managementGroup")}
                 </motion.p>
               )}
               {!collapsed && !group.label && gi === 0 && (
@@ -115,7 +115,7 @@ export default function AdminSidebar({ collapsed, onToggle }: Props) {
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.14em] px-3 mb-2"
                 >
-                  Menu
+                  {t("menuGroup")}
                 </motion.p>
               )}
             </AnimatePresence>
@@ -244,7 +244,7 @@ export default function AdminSidebar({ collapsed, onToggle }: Props) {
                 style={{ background: "transparent" }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(239,68,68,0.1)")}
                 onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                title="Déconnexion"
+                title={t("signOut")}
               >
                 <LogOut className="h-3.5 w-3.5" />
               </button>

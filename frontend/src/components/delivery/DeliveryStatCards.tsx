@@ -29,13 +29,13 @@ export default function DeliveryStatCards({ orders, isLoading }: Props) {
   const total     = orders?.length ?? 0;
 
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
+  const greeting = hour < 12 ? t("greetingMorning") : hour < 18 ? t("greetingAfternoon") : t("greetingEvening");
 
   const stats = [
-    { labelKey: "activeDeliveries", value: active.length,    icon: Truck,        href: "/delivery/active",    sub: "En cours" },
-    { labelKey: "inTransit",        value: inTransit.length, icon: Clock,        href: "/delivery/active",    sub: "En route" },
-    { labelKey: "completedToday",   value: completed.length, icon: CheckCircle,  href: "/delivery/completed", sub: "Livrées" },
-    { labelKey: "totalAssigned",    value: total,            icon: Package,      href: "/delivery/active",    sub: "Total assignées" },
+    { labelKey: "activeDeliveries", value: active.length,    icon: Truck,        href: "/delivery/active",    sub: t("inProgress") },
+    { labelKey: "inTransit",        value: inTransit.length, icon: Clock,        href: "/delivery/active",    sub: t("onTheWay") },
+    { labelKey: "completedToday",   value: completed.length, icon: CheckCircle,  href: "/delivery/completed", sub: t("delivered") },
+    { labelKey: "totalAssigned",    value: total,            icon: Package,      href: "/delivery/active",    sub: t("totalAssignedSub") },
   ] as const;
 
   return (
@@ -54,18 +54,18 @@ export default function DeliveryStatCards({ orders, isLoading }: Props) {
             <p className="text-blue-400 text-sm font-medium mb-1">
               {greeting}{user?.username ? `, ${user.username}` : ""} 👋
             </p>
-            <h1 className="text-2xl font-black text-white tracking-tight">Espace livreur</h1>
-            <p className="text-slate-400 text-sm mt-1">Vos livraisons du jour</p>
+            <h1 className="text-2xl font-black text-white tracking-tight">{t("deliverySpace")}</h1>
+            <p className="text-slate-400 text-sm mt-1">{t("todayDeliveries")}</p>
           </div>
           <div className="hidden md:flex items-center gap-6 text-right">
             <div>
               <p className="text-3xl font-black text-white">{isLoading ? "—" : active.length}</p>
-              <p className="text-xs text-slate-400 mt-0.5">En cours</p>
+              <p className="text-xs text-slate-400 mt-0.5">{t("inProgress")}</p>
             </div>
             <div className="h-10 w-px bg-white/10" />
             <div>
               <p className="text-3xl font-black text-blue-400">{isLoading ? "—" : completed.length}</p>
-              <p className="text-xs text-slate-400 mt-0.5">Livrées</p>
+              <p className="text-xs text-slate-400 mt-0.5">{t("delivered")}</p>
             </div>
           </div>
         </div>
