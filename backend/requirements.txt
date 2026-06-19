@@ -6,5 +6,7 @@ Pillow
 sib-api-v3-sdk
 Markdown
 python-dotenv
+psycopg2-binary
+dj-database-url
 whitenoise
 gunicorn
