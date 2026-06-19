@@ -24,7 +24,7 @@ function StatusPill({ status }: { status: string }) {
   return (
     <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold", cfg.bg, cfg.color)}>
       <span className={cn("h-1.5 w-1.5 rounded-full", cfg.dot)} />
-      {t(`status.${status as keyof ReturnType<typeof t>}` as any)}
+      {t(`status.${status}` as any)}
     </span>
   );
 }
