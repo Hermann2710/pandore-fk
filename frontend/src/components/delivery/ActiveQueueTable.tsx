@@ -65,57 +65,84 @@ export default function ActiveQueueTable({ orders, isLoading }: Props) {
           <p className="text-xs text-slate-400 mt-1">{t("noDeliveriesHint")}</p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-slate-100 bg-white overflow-hidden shadow-sm">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-100">
-                {["#", t("tableCustomer"), t("tableAddress"), t("tableStatus"), t("tableItems")].map((h, i) => (
-                  <th key={i} className="text-left px-4 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <AnimatePresence>
-                {active.slice(0, 5).map((order, i) => (
-                  <motion.tr
-                    key={order.id}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors"
-                  >
-                    <td className="px-4 py-3.5 font-bold text-slate-700 text-xs">#{order.id}</td>
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-xs shrink-0">
-                          {order.customer.username[0].toUpperCase()}
+        <>
+          {/* Mobile cards */}
+          <div className="flex flex-col gap-3 md:hidden">
+            <AnimatePresence>
+              {active.slice(0, 5).map((order, i) => (
+                <motion.div
+                  key={order.id}
+                  initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                  className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-slate-500">#{order.id}</span>
+                    <StatusPill status={order.status} />
+                  </div>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-xs shrink-0">
+                      {order.customer.username[0].toUpperCase()}
+                    </div>
+                    <span className="text-sm font-medium text-slate-700">{order.customer.username}</span>
+                    <span className="ml-auto inline-flex items-center gap-1 text-xs text-slate-500 bg-slate-100 rounded-full px-2 py-0.5 font-medium">
+                      <Package className="h-3 w-3" />{order.items.length}
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 text-slate-300 shrink-0 mt-0.5" />
+                    <span className="text-xs text-slate-500 line-clamp-1">{order.shipping_address}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden md:block rounded-2xl border border-slate-100 bg-white overflow-hidden shadow-sm">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-slate-50/80 border-b border-slate-100">
+                  {["#", t("tableCustomer"), t("tableAddress"), t("tableStatus"), t("tableItems")].map((h, i) => (
+                    <th key={i} className="text-left px-4 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <AnimatePresence>
+                  {active.slice(0, 5).map((order, i) => (
+                    <motion.tr
+                      key={order.id}
+                      initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                      className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors"
+                    >
+                      <td className="px-4 py-3.5 font-bold text-slate-700 text-xs">#{order.id}</td>
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-xs shrink-0">
+                            {order.customer.username[0].toUpperCase()}
+                          </div>
+                          <span className="text-slate-700 font-medium text-xs">{order.customer.username}</span>
                         </div>
-                        <span className="text-slate-700 font-medium text-xs">{order.customer.username}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3.5 max-w-48">
-                      <div className="flex items-start gap-1.5">
-                        <MapPin className="h-3.5 w-3.5 text-slate-300 shrink-0 mt-0.5" />
-                        <span className="text-xs text-slate-500 truncate">{order.shipping_address}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <StatusPill status={order.status} />
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <span className="inline-flex items-center gap-1 text-xs text-slate-500 bg-slate-100 rounded-full px-2 py-0.5 font-medium">
-                        <Package className="h-3 w-3" />
-                        {order.items.length}
-                      </span>
-                    </td>
-                  </motion.tr>
-                ))}
-              </AnimatePresence>
-            </tbody>
-          </table>
-        </div>
+                      </td>
+                      <td className="px-4 py-3.5 max-w-48">
+                        <div className="flex items-start gap-1.5">
+                          <MapPin className="h-3.5 w-3.5 text-slate-300 shrink-0 mt-0.5" />
+                          <span className="text-xs text-slate-500 truncate">{order.shipping_address}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5"><StatusPill status={order.status} /></td>
+                      <td className="px-4 py-3.5">
+                        <span className="inline-flex items-center gap-1 text-xs text-slate-500 bg-slate-100 rounded-full px-2 py-0.5 font-medium">
+                          <Package className="h-3 w-3" />{order.items.length}
+                        </span>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

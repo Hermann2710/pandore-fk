@@ -57,7 +57,7 @@ export default function DeliveryStatCards({ orders, isLoading }: Props) {
             <h1 className="text-2xl font-black text-white tracking-tight">{t("deliverySpace")}</h1>
             <p className="text-slate-400 text-sm mt-1">{t("todayDeliveries")}</p>
           </div>
-          <div className="hidden md:flex items-center gap-6 text-right">
+          <div className="hidden sm:flex items-center gap-6 text-right">
             <div>
               <p className="text-3xl font-black text-white">{isLoading ? "—" : active.length}</p>
               <p className="text-xs text-slate-400 mt-0.5">{t("inProgress")}</p>
@@ -72,7 +72,7 @@ export default function DeliveryStatCards({ orders, isLoading }: Props) {
       </motion.div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {stats.map((stat, i) => {
           const style = STAT_STYLES[i];
           return (

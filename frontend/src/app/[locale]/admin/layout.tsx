@@ -15,7 +15,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       )}
 
       {/* Sidebar — fixed drawer on mobile, static on desktop */}
-      <div className={`fixed inset-y-0 left-0 z-40 md:static md:z-auto transition-transform duration-300 ${
+      <div className={`fixed inset-y-0 left-0 z-40 flex h-full md:static md:z-auto transition-transform duration-300 ${
         mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       }`}>
         <AdminSidebar collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />

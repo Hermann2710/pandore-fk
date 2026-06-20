@@ -13,7 +13,7 @@ export default function DeliveryLayout({ children }: { children: React.ReactNode
         <div className="fixed inset-0 z-30 bg-black/50 md:hidden" onClick={() => setMobileOpen(false)} />
       )}
 
-      <div className={`fixed inset-y-0 left-0 z-40 md:static md:z-auto transition-transform duration-300 ${
+      <div className={`fixed inset-y-0 left-0 z-40 flex h-full md:static md:z-auto transition-transform duration-300 ${
         mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       }`}>
         <DeliverySidebar collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />

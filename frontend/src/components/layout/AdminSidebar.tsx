@@ -60,7 +60,7 @@ export default function AdminSidebar({ collapsed, onToggle }: Props) {
     <motion.aside
       animate={{ width: collapsed ? 68 : 252 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
-      className="relative flex flex-col shrink-0 overflow-hidden"
+      className="relative flex h-full flex-col shrink-0 overflow-hidden"
       style={{ background: "linear-gradient(180deg, #0f172a 0%, #07101f 60%, #050d1a 100%)" }}
     >
       {/* Logo */}
