@@ -45,7 +45,7 @@ export default function HeroCarousel({ section }: Props) {
   return (
     <section
       className="relative w-full overflow-hidden rounded-2xl bg-slate-900"
-      style={{ minHeight: 420 }}
+      style={{ minHeight: 320 }}
     >
       <AnimatePresence mode="wait">
         <motion.div
@@ -54,7 +54,7 @@ export default function HeroCarousel({ section }: Props) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -60 }}
           transition={{ duration: 0.45, ease: "easeInOut" }}
-          className="absolute inset-0 grid md:grid-cols-2"
+          className="absolute inset-0 grid grid-cols-1 md:grid-cols-2"
         >
           {/* Text side */}
           <div className="flex flex-col justify-center px-8 md:px-14 py-12 space-y-5 z-10">
@@ -63,7 +63,7 @@ export default function HeroCarousel({ section }: Props) {
                 {product.category.name}
               </span>
             )}
-            <h2 className="text-3xl md:text-5xl font-black text-white leading-tight">
+            <h2 className="text-2xl md:text-5xl font-black text-white leading-tight">
               {product.name}
             </h2>
             <p className="text-slate-400 text-sm md:text-base leading-relaxed max-w-sm line-clamp-3">

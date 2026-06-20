@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { User, MapPin, Lock, Bell } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { mediaUrl } from "@/lib/utils";
 import ProfileInfoTab from "@/components/profile/ProfileInfoTab";
 import AddressesTab from "@/components/profile/AddressesTab";
 import ChangePasswordTab from "@/components/profile/ChangePasswordTab";
@@ -25,11 +26,7 @@ export default function ProfilePage() {
     { id: "newsletter" as TabId, label: t("tabs.newsletter"), icon: Bell },
   ];
 
-  const avatarUrl = user?.avatar
-    ? user.avatar.startsWith("http")
-      ? user.avatar
-      : `http://localhost:8000${user.avatar}`
-    : null;
+  const avatarUrl = mediaUrl(user?.avatar);
 
   return (
     <div className="space-y-8">
@@ -55,12 +52,12 @@ export default function ProfilePage() {
         </div>
       </motion.div>
 
-      <div className="flex rounded-xl bg-muted p-1 gap-1">
+      <div className="flex overflow-x-auto rounded-xl bg-muted p-1 gap-1 no-scrollbar">
         {TABS.map((tb) => (
           <button
             key={tb.id}
             onClick={() => setTab(tb.id)}
-            className={`relative flex-1 flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-medium transition-colors ${
+            className={`relative flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 px-2 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
               tab === tb.id
                 ? "text-foreground"
                 : "text-muted-foreground hover:text-foreground"

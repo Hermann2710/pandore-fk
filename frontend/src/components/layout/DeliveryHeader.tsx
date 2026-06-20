@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { ChevronRight, RefreshCw, LogOut } from "lucide-react";
+import { ChevronRight, RefreshCw, LogOut, Menu } from "lucide-react";
 import { useLogout } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -37,13 +37,21 @@ function Breadcrumbs() {
   );
 }
 
-export default function DeliveryHeader() {
+export default function DeliveryHeader({ onMobileMenuToggle }: { onMobileMenuToggle?: () => void }) {
   const { mutate: logout } = useLogout();
   const qc = useQueryClient();
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-slate-100 bg-white/90 backdrop-blur-sm px-6 shrink-0">
-      <Breadcrumbs />
+    <header className="flex h-14 items-center justify-between border-b border-slate-100 bg-white/90 backdrop-blur-sm px-4 md:px-6 shrink-0">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onMobileMenuToggle}
+          className="md:hidden flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <Breadcrumbs />
+      </div>
       <div className="flex items-center gap-1">
         <button
           onClick={() => qc.invalidateQueries({ queryKey: ["delivery-queue"] })}

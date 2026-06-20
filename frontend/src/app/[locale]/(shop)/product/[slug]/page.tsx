@@ -98,7 +98,7 @@ export default function ProductDetailPage({
         </span>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Image */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}

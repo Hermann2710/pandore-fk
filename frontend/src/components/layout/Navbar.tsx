@@ -19,6 +19,7 @@ import {
   Shield,
   Tag,
   FolderOpen,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { useLogout } from "@/hooks/useAuth";
@@ -643,9 +644,14 @@ function CategoryStrip() {
 export default function Navbar() {
   const { data: config } = useSiteConfig();
   const t = useTranslations("nav");
+  const { user } = useAuth();
+  const { mutate: logout } = useLogout();
   const siteName = config?.site_name ?? "PANDORE";
   const tagline = config?.tagline || t("luxuryStore");
   const logoUrl = mediaUrl(config?.logo);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const cartCount = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
+  const hydrated = useHydrated();
 
   return (
     <motion.div
@@ -656,7 +662,8 @@ export default function Navbar() {
     >
       <TopBar />
       <div className="bg-slate-900 py-3">
-        <div className="mx-auto max-w-7xl px-4 flex items-center gap-4 sm:gap-6">
+        <div className="mx-auto max-w-7xl px-4 flex items-center gap-3">
+          {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0 group">
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -664,13 +671,7 @@ export default function Navbar() {
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 shadow-lg shadow-emerald-500/30 overflow-hidden"
             >
               {logoUrl ? (
-                <Image
-                  src={logoUrl}
-                  alt={siteName}
-                  width={36}
-                  height={36}
-                  className="object-contain"
-                />
+                <Image src={logoUrl} alt={siteName} width={36} height={36} className="object-contain" />
               ) : (
                 <Package className="h-5 w-5 text-white" />
               )}
@@ -678,27 +679,102 @@ export default function Navbar() {
             <div className="hidden sm:block">
               <span className="text-xl font-black tracking-tight text-white">
                 {siteName.length > 3 ? (
-                  <>
-                    {siteName.slice(0, -3)}
-                    <span className="text-emerald-400">
-                      {siteName.slice(-3)}
-                    </span>
-                  </>
+                  <>{siteName.slice(0, -3)}<span className="text-emerald-400">{siteName.slice(-3)}</span></>
                 ) : (
                   <span className="text-emerald-400">{siteName}</span>
                 )}
               </span>
-              <p className="text-[9px] text-slate-400 -mt-1 tracking-widest uppercase">
-                {tagline}
-              </p>
+              <p className="text-[9px] text-slate-400 -mt-1 tracking-widest uppercase">{tagline}</p>
             </div>
           </Link>
-          <SearchBar />
-          <div className="flex items-center gap-4 sm:gap-5 shrink-0">
+
+          {/* Search — hidden on mobile */}
+          <div className="hidden md:flex flex-1">
+            <SearchBar />
+          </div>
+
+          {/* Desktop actions */}
+          <div className="hidden md:flex items-center gap-4 shrink-0">
             <AccountMenu />
             <ActionIcons />
           </div>
+
+          {/* Mobile right side */}
+          <div className="flex md:hidden items-center gap-3 ml-auto">
+            <Link href="/cart" className="relative text-white">
+              <ShoppingCart className="h-6 w-6" />
+              {hydrated && cartCount > 0 && (
+                <span className="absolute -top-2 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-400 text-[9px] font-bold text-slate-900">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+            <button
+              onClick={() => setMobileMenuOpen((v) => !v)}
+              className="text-white p-1"
+              aria-label="Menu"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile search bar */}
+        <div className="md:hidden px-4 pt-2">
+          <SearchBar />
+        </div>
+
+        {/* Mobile menu drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="md:hidden overflow-hidden border-t border-slate-700 mt-2"
+            >
+              <div className="px-4 py-4 space-y-1">
+                {!user ? (
+                  <div className="space-y-2 pb-3 border-b border-slate-700">
+                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}
+                      className="block w-full text-center bg-emerald-500 text-white font-semibold py-2 rounded-lg text-sm">
+                      {t("signIn")}
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="pb-3 border-b border-slate-700">
+                    <p className="text-white font-semibold text-sm">{user.username}</p>
+                    <p className="text-slate-400 text-xs capitalize">{user.role}</p>
+                  </div>
+                )}
+                {[
+                  { href: "/catalog", label: t("newArrivals") },
+                  { href: "/cart", label: t("myCart") },
+                  ...(user ? [
+                    { href: "/orders", label: t("myOrders") },
+                    { href: "/profile", label: t("myProfile") },
+                    { href: "/wishlist", label: t("myWishlist") },
+                  ] : []),
+                  ...(user?.role === "admin" ? [{ href: "/admin", label: t("adminDashboard") }] : []),
+                  ...(user?.role === "delivery" ? [{ href: "/delivery", label: t("myQueue") }] : []),
+                ].map((item) => (
+                  <Link key={item.href} href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-2 py-2.5 text-sm text-slate-200 hover:text-white hover:bg-slate-700 rounded-lg transition-colors">
+                    {item.label}
+                  </Link>
+                ))}
+                {user && (
+                  <button
+                    onClick={() => { logout(); setMobileMenuOpen(false); }}
+                    className="w-full text-left px-2 py-2.5 text-sm text-red-400 hover:bg-slate-700 rounded-lg transition-colors">
+                    {t("signOut")}
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       <CategoryStrip />
     </motion.div>

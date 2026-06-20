@@ -63,9 +63,9 @@ export default function CheckoutPage() {
 
       <CheckoutSteps current={step} />
 
-      <div className="grid lg:grid-cols-5 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {/* Left — active step */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 order-2 lg:order-1">
           {step === 1 && (
             <CheckoutAddressStep
               addresses={addresses}
@@ -90,7 +90,7 @@ export default function CheckoutPage() {
         </div>
 
         {/* Right — order summary */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 order-1 lg:order-2">
           <CheckoutOrderSummary shippingAddress={shippingAddress} />
         </div>
       </div>
