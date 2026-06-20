@@ -1,56 +1,54 @@
+# -*- coding: utf-8 -*-
 """
 Run with: python manage.py shell < seed.py
 """
 import os
-import uuid
-from urllib.parse import urlparse
-
 import django
-from django.conf import settings
-from django.core.files import File
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pandore.settings")
 django.setup()
 
-import requests
+import cloudinary.uploader
 from catalog.models import Category, Tag, AttributeKey, Product, ProductAttribute
 
-def download_image(url, dest_dir):
-    os.makedirs(dest_dir, exist_ok=True)
+
+def upload_url(url, folder):
     try:
-        r = requests.get(url, stream=True, timeout=20)
-        r.raise_for_status()
-    except Exception:
+        result = cloudinary.uploader.upload(
+            url,
+            folder=folder,
+            use_filename=False,
+            overwrite=True,
+            resource_type="image",
+        )
+        return result["secure_url"]
+    except Exception as e:
+        print(f"  ⚠ Upload failed: {e}")
         return None
-    ext = os.path.splitext(urlparse(url).path)[1] or ".jpg"
-    filepath = os.path.join(dest_dir, f"{uuid.uuid4().hex}{ext}")
-    with open(filepath, "wb") as f:
-        for chunk in r.iter_content(1024):
-            f.write(chunk)
-    return filepath
 
 
+# ── Reset ─────────────────────────────────────────────────────────────────────
 ProductAttribute.objects.all().delete()
 Product.objects.all().delete()
 Tag.objects.all().delete()
 Category.objects.all().delete()
 AttributeKey.objects.all().delete()
 
-# ── Categories ──────────────────────────────────────────────────────────────
+# ── Categories ────────────────────────────────────────────────────────────────
 categories = {}
 for name, slug, desc in [
-    ("Smartphones & Tablettes",  "smartphones-tablettes",  "Smartphones, tablettes et accessoires mobiles."),
-    ("Ordinateurs & Périphériques", "ordinateurs-peripheriques", "Laptops, claviers, souris, hubs et SSD portables."),
-    ("Audio & Son",              "audio-son",              "Casques, écouteurs, enceintes et barres de son."),
-    ("Photo & Vidéo",            "photo-video",            "Appareils photo, caméras d'action et drones."),
-    ("TV & Home Cinéma",         "tv-home-cinema",         "Téléviseurs 4K, projecteurs et barres de son."),
-    ("Jeux Vidéo",               "jeux-video",             "Consoles, manettes et accessoires gaming."),
-    ("Maison Connectée",         "maison-connectee",       "Ampoules connectées, hubs domotiques, thermostats et caméras."),
-    ("Accessoires & Câbles",     "accessoires-cables",     "Chargeurs, câbles, protections et adaptateurs."),
+    ("Smartphones & Tablettes",      "smartphones-tablettes",      "Smartphones, tablettes et accessoires mobiles."),
+    ("Ordinateurs & Périphériques",  "ordinateurs-peripheriques",  "Laptops, claviers, souris, hubs et SSD portables."),
+    ("Audio & Son",                  "audio-son",                  "Casques, écouteurs, enceintes et barres de son."),
+    ("Photo & Vidéo",                "photo-video",                "Appareils photo, caméras d'action et drones."),
+    ("TV & Home Cinéma",             "tv-home-cinema",             "Téléviseurs 4K, projecteurs et barres de son."),
+    ("Jeux Vidéo",                   "jeux-video",                 "Consoles, manettes et accessoires gaming."),
+    ("Maison Connectée",             "maison-connectee",           "Ampoules connectées, hubs domotiques, thermostats et caméras."),
+    ("Accessoires & Câbles",         "accessoires-cables",         "Chargeurs, câbles, protections et adaptateurs."),
 ]:
     categories[slug] = Category.objects.create(name=name, slug=slug, description=desc)
 
-# ── Tags ─────────────────────────────────────────────────────────────────────
+# ── Tags ──────────────────────────────────────────────────────────────────────
 for name, slug in [
     ("Nouveauté",       "new-arrival"),
     ("Bestseller",      "bestseller"),
@@ -66,7 +64,7 @@ tags = {t.slug: t for t in Tag.objects.all()}
 attr_map = {k: AttributeKey.objects.create(name=k)
             for k in ("Couleur", "Matière", "Stockage", "Marque", "Connectivité")}
 
-# ── Products (prix en FCFA) ──────────────────────────────────────────────────
+# ── Products ──────────────────────────────────────────────────────────────────
 products_data = [
     # Smartphones & Tablettes
     {
@@ -81,7 +79,7 @@ products_data = [
         "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1200",
     },
     {
-        "name": "Tablette Air S 10\"",
+        "name": 'Tablette Air S 10"',
         "slug": "tablette-air-s-10",
         "price": "195000",
         "stock": 30,
@@ -113,7 +111,6 @@ products_data = [
         "description": "Tracker bien-être avec fréquence cardiaque et GPS intégré.",
         "image": "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=1200",
     },
-
     # Ordinateurs & Périphériques
     {
         "name": "Laptop Ultra 13",
@@ -170,7 +167,6 @@ products_data = [
         "description": "Hub compact avec HDMI, USB-A et ports de charge PD.",
         "image": "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=1200",
     },
-
     # Audio & Son
     {
         "name": "Casque Sans Fil Max ANC",
@@ -205,7 +201,6 @@ products_data = [
         "description": "Enceinte portable avec son riche et design imperméable.",
         "image": "https://images.unsplash.com/photo-1518444065439-e933c06ce9cd?w=1200",
     },
-
     # Photo & Vidéo
     {
         "name": "Appareil Photo Hybride M",
@@ -240,10 +235,9 @@ products_data = [
         "description": "Drone portable avec vidéo 4K, détection d'obstacles et longue autonomie.",
         "image": "https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=1200",
     },
-
     # TV & Home Cinéma
     {
-        "name": "Téléviseur OLED 55\" 4K",
+        'name': 'Téléviseur OLED 55" 4K',
         "slug": "televiseur-oled-55-4k",
         "price": "850000",
         "stock": 10,
@@ -264,7 +258,6 @@ products_data = [
         "description": "Liseuse à écran anti-reflet avec longue autonomie.",
         "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1200",
     },
-
     # Jeux Vidéo
     {
         "name": "Console Next Gen",
@@ -299,7 +292,6 @@ products_data = [
         "description": "Casque gaming son surround 7.1 avec micro rétractable.",
         "image": "https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=1200",
     },
-
     # Maison Connectée
     {
         "name": "Hub Maison Connectée",
@@ -334,7 +326,6 @@ products_data = [
         "description": "Caméra intérieure avec vision nocturne et alertes de mouvement.",
         "image": "https://images.unsplash.com/photo-1558002038-1055907df827?w=1200",
     },
-
     # Accessoires & Câbles
     {
         "name": "Chargeur Sans Fil Rapide 15W",
@@ -382,9 +373,8 @@ products_data = [
     },
 ]
 
-images_dir = os.path.join(settings.MEDIA_ROOT, "products")
-
 for pd in products_data:
+    image_url = upload_url(pd["image"], "products")
     product = Product.objects.create(
         name=pd["name"],
         slug=pd["slug"],
@@ -392,6 +382,7 @@ for pd in products_data:
         price=pd["price"],
         stock=pd["stock"],
         category=categories[pd["category"]],
+        image=image_url or "",
         is_active=True,
     )
     for tag_slug in pd["tags"]:
@@ -399,9 +390,6 @@ for pd in products_data:
     for key_name, value in pd.get("attrs", []):
         if key_name in attr_map:
             ProductAttribute.objects.create(product=product, key=attr_map[key_name], value=value)
-    image_path = download_image(pd["image"], images_dir)
-    if image_path:
-        with open(image_path, "rb") as img_file:
-            product.image.save(os.path.basename(image_path), File(img_file), save=True)
+    print(f"  ✓ {product.name}")
 
-print(f"[OK] Seed terminé : {Product.objects.count()} produits, {Category.objects.count()} catégories")
+print(f"\n[OK] {Product.objects.count()} produits, {Category.objects.count()} catégories")

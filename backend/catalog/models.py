@@ -35,7 +35,7 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField(default=0)
-    image = models.ImageField(upload_to="products/", null=True, blank=True)
+    image = models.ImageField(upload_to="products/", null=True, blank=True, max_length=500)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="products")
     tags = models.ManyToManyField(Tag, blank=True, related_name="products")
     is_active = models.BooleanField(default=True)
@@ -89,7 +89,7 @@ class HomepageSection(models.Model):
     cta_label = models.CharField(max_length=100, blank=True, default="Shop Now")
     cta_url   = models.CharField(max_length=200, blank=True)
     bg_color  = models.CharField(max_length=20, blank=True)
-    bg_image  = models.ImageField(upload_to="homepage/", null=True, blank=True)
+    bg_image  = models.ImageField(upload_to="homepage/", null=True, blank=True, max_length=500)
 
     class Meta:
         ordering = ["order"]

@@ -6,7 +6,7 @@ from orders.models import Order
 class PaymentMethod(models.Model):
     name         = models.CharField(max_length=100)
     instructions = models.TextField(blank=True, help_text="Shown to the customer at checkout")
-    logo         = models.ImageField(upload_to="payment_methods/", null=True, blank=True)
+    logo = models.ImageField(upload_to="payment_methods/", null=True, blank=True, max_length=500)
     is_active    = models.BooleanField(default=True)
     order        = models.PositiveIntegerField(default=0, help_text="Display order")
 

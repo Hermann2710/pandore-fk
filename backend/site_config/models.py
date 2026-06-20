@@ -6,7 +6,7 @@ class SiteSettings(models.Model):
     site_name         = models.CharField(max_length=100, default="Pandore")
     tagline           = models.CharField(max_length=200, blank=True, default="Luxury Store")
     description       = models.TextField(blank=True)
-    logo              = models.ImageField(upload_to="settings/", null=True, blank=True)
+    logo = models.ImageField(upload_to="settings/", null=True, blank=True, max_length=500)
     email             = models.EmailField(blank=True)
     phone             = models.CharField(max_length=30, blank=True)
     address           = models.CharField(max_length=255, blank=True)
