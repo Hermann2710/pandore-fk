@@ -14,6 +14,9 @@ export function useLogin() {
     mutationFn: authApi.login,
     onSuccess: ({ data }) => {
       setUser(data);
+      // Set the role cookie client-side so the middleware can read it
+      // (needed when backend is cross-origin and can't set cookies directly)
+      document.cookie = `pandore_role=${data.role};path=/;max-age=${60 * 60 * 24 * 7};samesite=lax`;
       toast.success(`Welcome back, ${data.username}!`);
       if (data.role === "admin") router.push("/admin");
       else if (data.role === "delivery") router.push("/delivery");
@@ -30,6 +33,7 @@ export function useRegister() {
     mutationFn: authApi.register,
     onSuccess: ({ data }) => {
       setUser(data);
+      document.cookie = `pandore_role=${data.role};path=/;max-age=${60 * 60 * 24 * 7};samesite=lax`;
       toast.success(`Welcome to PANDORE, ${data.username}!`);
       router.push("/catalog");
     },
@@ -52,6 +56,7 @@ export function useLogout() {
     mutationFn: authApi.logout,
     onSuccess: () => {
       setUser(null);
+      document.cookie = "pandore_role=;path=/;max-age=0";
       qc.clear();
       router.push("/login");
       toast.success("Logged out successfully");
