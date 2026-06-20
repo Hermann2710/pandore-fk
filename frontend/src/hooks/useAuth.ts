@@ -14,9 +14,8 @@ export function useLogin() {
     mutationFn: authApi.login,
     onSuccess: ({ data }) => {
       setUser(data);
-      // Set the role cookie client-side so the middleware can read it
-      // (needed when backend is cross-origin and can't set cookies directly)
-      document.cookie = `pandore_role=${data.role};path=/;max-age=${60 * 60 * 24 * 7};samesite=lax`;
+      // Mirror role cookie on the frontend domain so the Next.js middleware can read it
+      document.cookie = `pandore_role=${data.role};path=/;max-age=${60 * 60 * 24 * 7};samesite=strict`;
       toast.success(`Welcome back, ${data.username}!`);
       if (data.role === "admin") router.push("/admin");
       else if (data.role === "delivery") router.push("/delivery");
@@ -33,7 +32,7 @@ export function useRegister() {
     mutationFn: authApi.register,
     onSuccess: ({ data }) => {
       setUser(data);
-      document.cookie = `pandore_role=${data.role};path=/;max-age=${60 * 60 * 24 * 7};samesite=lax`;
+      document.cookie = `pandore_role=${data.role};path=/;max-age=${60 * 60 * 24 * 7};samesite=strict`;
       toast.success(`Welcome to PANDORE, ${data.username}!`);
       router.push("/catalog");
     },
