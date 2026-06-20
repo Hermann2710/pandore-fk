@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Category, Tag, AttributeKey, Product, ProductAttribute, HomepageSection
+from core.utils import cloudinary_url
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -37,10 +38,7 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
     def get_image(self, obj):
-        request = self.context.get("request")
-        if obj.image and request:
-            return request.build_absolute_uri(obj.image.url)
-        return None
+        return cloudinary_url(obj.image)
 
 
 class ProductWriteSerializer(serializers.ModelSerializer):
@@ -64,10 +62,7 @@ class HomepageSectionSerializer(serializers.ModelSerializer):
         ]
 
     def get_bg_image(self, obj):
-        request = self.context.get("request")
-        if obj.bg_image and request:
-            return request.build_absolute_uri(obj.bg_image.url)
-        return None
+        return cloudinary_url(obj.bg_image)
 
 
 class HomepageSectionWriteSerializer(serializers.ModelSerializer):

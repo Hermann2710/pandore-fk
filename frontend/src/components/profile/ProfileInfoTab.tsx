@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { useUpdateProfile, useDeleteAvatar } from "@/hooks/useProfile";
+import { mediaUrl } from "@/lib/utils";
 
 export default function ProfileInfoTab() {
   const t = useTranslations("profile.info");
@@ -42,9 +43,7 @@ export default function ProfileInfoTab() {
   const set = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
 
-  const avatarUrl = avatarPreview ?? (user?.avatar
-    ? user.avatar.startsWith("http") ? user.avatar : `http://localhost:8000${user.avatar}`
-    : null);
+  const avatarUrl = avatarPreview ?? mediaUrl(user?.avatar);
 
   return (
     <Card>

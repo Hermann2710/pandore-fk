@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
 import type { HomepageSection } from "@/types";
+import { mediaUrl } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface Props {
@@ -94,7 +95,7 @@ export default function HeroCarousel({ section }: Props) {
           <div className="relative hidden md:block">
             {product.image ? (
               <Image
-                src={product.image}
+                src={mediaUrl(product.image)!}
                 alt={product.name}
                 fill
                 className="object-cover opacity-80"

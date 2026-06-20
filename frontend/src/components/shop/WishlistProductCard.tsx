@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useCartStore } from "@/store/cart";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
 import { useToggleWishlist } from "@/hooks/useWishlist";
+import { mediaUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import type { Product } from "@/types";
 
@@ -30,7 +31,7 @@ export default function WishlistProductCard({ product, index }: Props) {
       <Link href={`/product/${product.slug}`}>
         <div className="relative aspect-square overflow-hidden bg-muted">
           {product.image
-            ? <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+            ? <Image src={mediaUrl(product.image)!} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
             : <div className="flex h-full items-center justify-center"><Package className="h-12 w-12 text-muted-foreground/20" /></div>
           }
           {product.stock === 0 && (

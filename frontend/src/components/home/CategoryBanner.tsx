@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { HomepageSection } from "@/types";
+import { mediaUrl } from "@/lib/utils";
 
 interface Props {
   section: HomepageSection;
@@ -30,7 +31,7 @@ export default function CategoryBanner({ section }: Props) {
       {/* Background image */}
       {section.bg_image && (
         <Image
-          src={section.bg_image}
+          src={mediaUrl(section.bg_image)!}
           alt={section.title}
           fill
           className="object-cover opacity-40"

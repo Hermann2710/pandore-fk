@@ -6,6 +6,7 @@ import { CreditCard, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { PaymentMethod } from "@/types";
+import { mediaUrl } from "@/lib/utils";
 
 interface Props {
   methods: PaymentMethod[];
@@ -42,7 +43,7 @@ export default function CheckoutPaymentStep({ methods, isLoading, selected, onSe
               ${selected === method.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/40 hover:bg-muted/30"}`}>
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted overflow-hidden">
               {method.logo
-                ? <Image src={method.logo} alt={method.name} width={48} height={48} className="object-contain" />
+                ? <Image src={mediaUrl(method.logo)!} alt={method.name} width={48} height={48} className="object-contain" />
                 : <CreditCard className="h-6 w-6 text-muted-foreground" />}
             </div>
             <div className="flex-1 min-w-0">

@@ -1,11 +1,17 @@
 from rest_framework import serializers
 from .models import User
+from core.utils import cloudinary_url
 
 
 class UserSerializer(serializers.ModelSerializer):
+    avatar = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ["id", "username", "email", "role", "phone", "avatar", "is_active", "date_joined"]
+
+    def get_avatar(self, obj):
+        return cloudinary_url(obj.avatar)
 
 
 class UserProfileUpdateSerializer(serializers.ModelSerializer):

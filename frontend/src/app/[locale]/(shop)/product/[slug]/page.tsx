@@ -12,6 +12,7 @@ import { useCartStore } from "@/store/cart";
 import { useRecentlyViewedStore } from "@/store/recentlyViewed";
 import { useProduct } from "@/hooks/useCatalog";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
+import { mediaUrl } from "@/lib/utils";
 import RelatedProducts from "@/components/shop/RelatedProducts";
 import RecentlyViewed from "@/components/shop/RecentlyViewed";
 import WishlistButton from "@/components/shop/WishlistButton";
@@ -108,7 +109,7 @@ export default function ProductDetailPage({
           <div className="relative aspect-square rounded-2xl overflow-hidden bg-muted">
             {product.image ? (
               <Image
-                src={product.image}
+                src={mediaUrl(product.image)!}
                 alt={product.name}
                 fill
                 className="object-cover"

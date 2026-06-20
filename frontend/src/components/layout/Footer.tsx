@@ -7,6 +7,7 @@ import { Package, MapPin, Mail, Phone } from "lucide-react";
 import { useSubscribe } from "@/hooks/useNewsletter";
 import { useSiteConfig } from "@/hooks/useSiteConfig";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
+import { mediaUrl } from "@/lib/utils";
 
 export default function Footer() {
   const t = useTranslations("footer");
@@ -16,9 +17,7 @@ export default function Footer() {
   const { data: config } = useSiteConfig();
   const { currency } = useCurrencyStore();
 
-  const logoUrl = config?.logo
-    ? config.logo.startsWith("http") ? config.logo : `http://localhost:8000${config.logo}`
-    : null;
+  const logoUrl = mediaUrl(config?.logo);
 
   const siteName = config?.site_name ?? "PANDORE";
 

@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAdminProducts, useAdminCategories, useAdminTags, useCreateProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/useCatalog";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
+import { mediaUrl } from "@/lib/utils";
 import type { Product, Category, Tag } from "@/types";
 
 function ProductForm({ initial, categories, tags, onSubmit, isPending }: {
@@ -74,7 +75,7 @@ function ProductForm({ initial, categories, tags, onSubmit, isPending }: {
         <div className="space-y-2 col-span-2">
           <Label>{t("labelImage")}</Label>
           <Input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] ?? null)} />
-          {initial?.image && !imageFile && <div className="relative h-16 w-16 rounded-lg overflow-hidden border"><Image src={initial.image} alt={initial.name} fill className="object-cover" /></div>}
+          {initial?.image && !imageFile && <div className="relative h-16 w-16 rounded-lg overflow-hidden border"><Image src={mediaUrl(initial.image)!} alt={initial.name} fill className="object-cover" /></div>}
         </div>
         <div className="col-span-2 flex items-center gap-3">
           <button type="button" onClick={() => setIsActive((v) => !v)} className="text-primary">
@@ -149,7 +150,7 @@ export default function ProductsTab() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="relative h-10 w-10 rounded-lg overflow-hidden bg-muted shrink-0">
-                          {product.image ? <Image src={product.image} alt={product.name} fill className="object-cover" /> : <Package className="h-5 w-5 text-muted-foreground m-auto mt-2.5" />}
+                          {product.image ? <Image src={mediaUrl(product.image)!} alt={product.name} fill className="object-cover" /> : <Package className="h-5 w-5 text-muted-foreground m-auto mt-2.5" />}
                         </div>
                         <div><p className="font-medium leading-tight">{product.name}</p><p className="text-xs text-muted-foreground font-mono">{product.slug}</p></div>
                       </div>

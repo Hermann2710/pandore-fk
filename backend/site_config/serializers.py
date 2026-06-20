@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import SiteSettings, SocialLink
+from core.utils import cloudinary_url
 
 
 class SocialLinkSerializer(serializers.ModelSerializer):
@@ -22,10 +23,7 @@ class SiteSettingsSerializer(serializers.ModelSerializer):
         ]
 
     def get_logo(self, obj):
-        request = self.context.get("request")
-        if obj.logo and request:
-            return request.build_absolute_uri(obj.logo.url)
-        return None
+        return cloudinary_url(obj.logo)
 
 
 class SiteSettingsWriteSerializer(serializers.ModelSerializer):

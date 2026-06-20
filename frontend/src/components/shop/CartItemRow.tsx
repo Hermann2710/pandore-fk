@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCartStore } from "@/store/cart";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
+import { mediaUrl } from "@/lib/utils";
 import type { CartItem } from "@/types";
 
 interface Props { item: CartItem; }
@@ -20,7 +21,7 @@ export default function CartItemRow({ item }: Props) {
       <CardContent className="flex items-center gap-4 p-4">
         <div className="relative h-20 w-20 rounded-lg overflow-hidden bg-muted shrink-0">
           {item.product.image
-            ? <Image src={item.product.image} alt={item.product.name} fill className="object-cover" />
+            ? <Image src={mediaUrl(item.product.image)!} alt={item.product.name} fill className="object-cover" />
             : <div className="h-full w-full bg-muted" />}
         </div>
 

@@ -10,6 +10,7 @@ import { useCartStore } from "@/store/cart";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
 import WishlistButton from "@/components/shop/WishlistButton";
 import type { Product } from "@/types";
+import { mediaUrl } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface Props { product: Product; index?: number; }
@@ -25,6 +26,8 @@ export default function ProductCard({ product, index = 0 }: Props) {
     toast.success(t("addedToCart", { name: product.name }), { description: formatPrice(product.price, currency) });
   };
 
+  console.log(product.image);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
@@ -35,7 +38,7 @@ export default function ProductCard({ product, index = 0 }: Props) {
         <div className="rounded-xl border bg-card overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
           <div className="relative aspect-square overflow-hidden bg-muted">
             {product.image
-              ? <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+              ? <Image src={mediaUrl(product.image)!} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
               : <div className="flex h-full items-center justify-center"><Tag className="h-12 w-12 text-muted-foreground/30" /></div>
             }
             {product.stock === 0 && (

@@ -4,7 +4,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Truck, CheckCircle, LayoutDashboard, ChevronLeft, Package, Store, LogOut } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, mediaUrl } from "@/lib/utils";
 import { useSiteConfig } from "@/hooks/useSiteConfig";
 import { useAuth } from "@/context/AuthContext";
 import { useLogout } from "@/hooks/useAuth";
@@ -26,9 +26,7 @@ export default function DeliverySidebar({ collapsed, onToggle }: Props) {
   const { mutate: logout } = useLogout();
 
   const siteName = config?.site_name ?? "PANDORE";
-  const logoUrl = config?.logo
-    ? config.logo.startsWith("http") ? config.logo : `http://localhost:8000${config.logo}`
-    : null;
+  const logoUrl = mediaUrl(config?.logo);
 
   return (
     <motion.aside

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAdminPaymentMethods, useAdminPayments, useCreatePaymentMethod, useUpdatePaymentMethod, useDeletePaymentMethod } from "@/hooks/usePayments";
+import { mediaUrl } from "@/lib/utils";
 import type { PaymentMethod } from "@/types";
 
 function MethodForm({ initial, onSubmit, onCancel, isPending }: {
@@ -109,7 +110,7 @@ export default function PaymentsTab() {
                   ) : (
                     <motion.div layout className="flex items-center gap-4 rounded-xl border bg-card p-4">
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted overflow-hidden">
-                        {method.logo ? <Image src={method.logo} alt={method.name} width={48} height={48} className="object-contain" /> : <CreditCard className="h-6 w-6 text-muted-foreground" />}
+                        {method.logo ? <Image src={mediaUrl(method.logo)!} alt={method.name} width={48} height={48} className="object-contain" /> : <CreditCard className="h-6 w-6 text-muted-foreground" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold">{method.name}</p>

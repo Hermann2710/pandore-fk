@@ -31,6 +31,7 @@ import { useCurrencies } from "@/hooks/useCurrencies";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
 import { useSiteConfig } from "@/hooks/useSiteConfig";
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
+import { mediaUrl } from "@/lib/utils";
 import type { Category } from "@/types";
 
 function TopBar() {
@@ -644,11 +645,7 @@ export default function Navbar() {
   const t = useTranslations("nav");
   const siteName = config?.site_name ?? "PANDORE";
   const tagline = config?.tagline || t("luxuryStore");
-  const logoUrl = config?.logo
-    ? config.logo.startsWith("http")
-      ? config.logo
-      : `http://localhost:8000${config.logo}`
-    : null;
+  const logoUrl = mediaUrl(config?.logo);
 
   return (
     <motion.div

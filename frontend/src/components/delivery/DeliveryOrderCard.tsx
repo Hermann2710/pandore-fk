@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useUpdateDeliveryStatus } from "@/hooks/useOrders";
 import { useCurrencyStore, formatPrice } from "@/store/currency";
+import { mediaUrl } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import type { Order } from "@/types";
 
@@ -145,11 +146,7 @@ export default function DeliveryOrderCard({ order, index }: Props) {
           </p>
           <div className="space-y-1.5">
             {order.items.map((item) => {
-              const imgUrl = item.product.image
-                ? item.product.image.startsWith("http")
-                  ? item.product.image
-                  : `http://localhost:8000${item.product.image}`
-                : null;
+              const imgUrl = mediaUrl(item.product.image);
               return (
                 <div key={item.id} className="flex items-center gap-2.5">
                   <div className="h-8 w-8 rounded-lg bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">

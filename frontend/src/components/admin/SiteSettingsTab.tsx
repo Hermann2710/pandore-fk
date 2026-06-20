@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useAdminSiteConfig, useUpdateSiteConfig, useDeleteLogo, useAdminSocialLinks, useCreateSocialLink, useUpdateSocialLink, useDeleteSocialLink } from "@/hooks/useSiteConfig";
+import { mediaUrl } from "@/lib/utils";
 import type { SocialLink } from "@/types";
 
 function GeneralSettingsForm() {
@@ -44,7 +45,7 @@ function GeneralSettingsForm() {
       <div className="flex items-center gap-5">
         <div className="relative h-20 w-20 rounded-2xl overflow-hidden bg-muted border shrink-0">
           {logoPreview || data?.logo
-            ? <Image src={logoPreview ?? data!.logo!} alt={t("labelLogo")} fill className="object-contain p-2" />
+            ? <Image src={logoPreview ?? mediaUrl(data!.logo)!} alt={t("labelLogo")} fill className="object-contain p-2" />
             : <div className="flex h-full items-center justify-center"><Package className="h-8 w-8 text-muted-foreground/40" /></div>}
         </div>
         <div className="space-y-1.5 flex-1">

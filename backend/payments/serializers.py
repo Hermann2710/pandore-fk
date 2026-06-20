@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import PaymentMethod, Payment
+from core.utils import cloudinary_url
 
 
 class PaymentMethodSerializer(serializers.ModelSerializer):
@@ -10,10 +11,7 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "instructions", "logo", "is_active", "order"]
 
     def get_logo(self, obj):
-        request = self.context.get("request")
-        if obj.logo and request:
-            return request.build_absolute_uri(obj.logo.url)
-        return None
+        return cloudinary_url(obj.logo)
 
 
 class PaymentMethodWriteSerializer(serializers.ModelSerializer):
