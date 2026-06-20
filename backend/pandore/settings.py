@@ -115,7 +115,7 @@ CORS_ALLOW_CREDENTIALS = True  # Required for cookies to be sent cross-origin
 AUTH_COOKIE_ACCESS = "pandore_access"
 AUTH_COOKIE_REFRESH = "pandore_refresh"
 AUTH_COOKIE_SECURE = os.environ.get("AUTH_COOKIE_SECURE", "False") == "True"
-AUTH_COOKIE_SAMESITE = "Lax"
+AUTH_COOKIE_SAMESITE = "None"
 
 # ── Brevo (Sendinblue) ────────────────────────────────────────────────────────
 BREVO_API_KEY        = os.environ.get("BREVO_API_KEY", "")
