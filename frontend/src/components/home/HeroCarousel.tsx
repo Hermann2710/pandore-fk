@@ -43,10 +43,7 @@ export default function HeroCarousel({ section }: Props) {
   const product = products[current];
 
   return (
-    <section
-      className="relative w-full overflow-hidden rounded-2xl bg-slate-900"
-      style={{ minHeight: 320 }}
-    >
+    <section className="relative w-full overflow-hidden rounded-2xl bg-slate-900" style={{ minHeight: 320 }}>
       <AnimatePresence mode="wait">
         <motion.div
           key={product.id}
@@ -54,10 +51,24 @@ export default function HeroCarousel({ section }: Props) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -60 }}
           transition={{ duration: 0.45, ease: "easeInOut" }}
-          className="absolute inset-0 grid grid-cols-1 md:grid-cols-2"
+          className="absolute inset-0 flex flex-col md:grid md:grid-cols-2"
         >
+          {/* Image background on mobile, side panel on desktop */}
+          {product.image && (
+            <div className="absolute inset-0 md:relative md:inset-auto md:order-2">
+              <Image
+                src={mediaUrl(product.image)!}
+                alt={product.name}
+                fill
+                className="object-cover opacity-40 md:opacity-80"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/60 to-slate-900/20 md:bg-gradient-to-r md:from-slate-900 md:via-slate-900/20 md:to-transparent" />
+            </div>
+          )}
+
           {/* Text side */}
-          <div className="flex flex-col justify-center px-8 md:px-14 py-12 space-y-5 z-10">
+          <div className="relative z-10 flex flex-col justify-center px-6 md:px-14 py-10 space-y-4 md:order-1">
             {product.category && (
               <span className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
                 {product.category.name}
@@ -66,46 +77,26 @@ export default function HeroCarousel({ section }: Props) {
             <h2 className="text-2xl md:text-5xl font-black text-white leading-tight">
               {product.name}
             </h2>
-            <p className="text-slate-400 text-sm md:text-base leading-relaxed max-w-sm line-clamp-3">
+            <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-sm line-clamp-2 md:line-clamp-3">
               {product.description}
             </p>
-            <p className="text-3xl font-bold text-emerald-400">
+            <p className="text-2xl md:text-3xl font-bold text-emerald-400">
               {formatPrice(product.price, currency)}
             </p>
-            <div className="flex gap-3 pt-2">
-              <Button variant="link" size="lg" asChild>
+            <div className="flex flex-wrap gap-3 pt-1">
+              <Button variant="link" size="sm" asChild className="md:text-base md:h-11">
                 <Link href={`/product/${product.slug}`}>{t("viewProduct")}</Link>
               </Button>
               <Button
                 variant="luxury"
-                size="lg"
-                className="border-slate-600 text-white hover:bg-slate-800 gap-2"
-                onClick={() => {
-                  addItem(product);
-                  toast.success(t("addedToCart", { name: product.name }));
-                }}
+                size="sm"
+                className="md:text-base md:h-11 border-slate-600 text-white hover:bg-slate-800 gap-2"
+                onClick={() => { addItem(product); toast.success(t("addedToCart", { name: product.name })); }}
                 disabled={product.stock === 0}
               >
                 <ShoppingCart className="h-4 w-4" /> {t("addToCart")}
               </Button>
             </div>
-          </div>
-
-          {/* Image side */}
-          <div className="relative hidden md:block">
-            {product.image ? (
-              <Image
-                src={mediaUrl(product.image)!}
-                alt={product.name}
-                fill
-                className="object-cover opacity-80"
-                priority
-              />
-            ) : (
-              <div className="absolute inset-0 bg-linear-to-l from-emerald-900/30 to-transparent" />
-            )}
-            {/* Gradient overlay blending into text side */}
-            <div className="absolute inset-0 bg-linear-to-r from-slate-900 via-slate-900/20 to-transparent" />
           </div>
         </motion.div>
       </AnimatePresence>
